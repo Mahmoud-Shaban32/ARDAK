@@ -1,19 +1,35 @@
 @model CreateAdminDto
 @{
-    ViewData["Title"] = "Provision Admin Account";
+    ViewData["Title"] = "إنشاء حساب مشرف جديد";
 }
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">إدارة المشرفين</a></li>
+        <li class="breadcrumb-item active text-muted">إنشاء مشرف جديد</li>
+    </ol>
+</nav>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-person-plus-fill text-primary fs-5"></i>
+                <span>إنشاء وتعيين حساب مشرف جديد</span>
+            </div>
             <div class="card-body p-4">
-                <h3 class="fw-bold mb-1">Provision Admin Account</h3>
-                <p class="text-muted small mb-4">Create an internal Admin user. The created account receives the 'Admin' role strictly.</p>
+                <p class="text-muted small mb-4">
+                    إضافة حساب مشرف إداري جديد في منصة <strong>أرضك</strong>. يحصل الحساب على دور "Admin" وصلاحيات إدارة العقارات والمعاملات.
+                </p>
 
                 @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
                 {
-                    <div class="alert alert-danger" role="alert">
-                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2 mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <div>
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
                     </div>
                 }
 
@@ -21,33 +37,36 @@
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label fw-semibold"></label>
-                        <input asp-for="FullName" class="form-control" placeholder="Admin Full Name" />
-                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                        <label asp-for="FullName" class="form-label fw-bold small text-muted">اسم المشرف الكامل <span class="text-danger">*</span></label>
+                        <input asp-for="FullName" class="form-control" placeholder="الاسم الرباعي للمشرف" autofocus />
+                        <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label fw-semibold"></label>
-                        <input asp-for="Email" class="form-control" placeholder="admin@ardak.internal" />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
+                        <label asp-for="Email" class="form-label fw-bold small text-muted">البريد الإلكتروني المهني <span class="text-danger">*</span></label>
+                        <input asp-for="Email" class="form-control font-monospace" placeholder="admin@ardak.internal" dir="ltr" />
+                        <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Password" class="form-label fw-semibold"></label>
-                        <input asp-for="Password" class="form-control" placeholder="••••••••" />
-                        <span asp-validation-for="Password" class="text-danger small"></span>
-                        <div class="form-text">Minimum 8 characters with at least one uppercase letter and one digit.</div>
+                        <label asp-for="Password" class="form-label fw-bold small text-muted">كلمة المرور المؤقتة <span class="text-danger">*</span></label>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••" dir="ltr" />
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-text text-muted">يجب ألا تقل عن 8 خانات وتحتوي على حرف كبير ورقم واحد على الأقل.</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" placeholder="••••••••" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label fw-bold small text-muted">تأكيد كلمة المرور <span class="text-danger">*</span></label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="••••••••" dir="ltr" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
-                        <button type="submit" class="btn btn-primary">Create Admin Account</button>
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">إلغاء</a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow">
+                            <i class="bi bi-shield-check me-1"></i>
+                            <span>إنشاء الحساب الإداري</span>
+                        </button>
                     </div>
                 </form>
             </div>

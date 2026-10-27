@@ -1,16 +1,28 @@
 @model Ardak.Model.Enums.ProcedureStatus
 @{
-    var (cssClass, label) = Model switch
+    var (badgeClass, icon, label) = Model switch
     {
-        Ardak.Model.Enums.ProcedureStatus.Submitted          => ("bg-secondary", "Submitted"),
-        Ardak.Model.Enums.ProcedureStatus.InProgress         => ("bg-primary", "In Progress"),
-        Ardak.Model.Enums.ProcedureStatus.PendingRequirements => ("bg-warning text-dark", "Pending Requirements"),
-        Ardak.Model.Enums.ProcedureStatus.UnderReview        => ("bg-info text-dark", "Under Review"),
-        Ardak.Model.Enums.ProcedureStatus.Approved           => ("bg-success", "Approved"),
-        Ardak.Model.Enums.ProcedureStatus.Rejected           => ("bg-danger", "Rejected"),
-        Ardak.Model.Enums.ProcedureStatus.Completed          => ("bg-success", "Completed"),
-        Ardak.Model.Enums.ProcedureStatus.Cancelled          => ("bg-secondary", "Cancelled"),
-        _ => ("bg-secondary", Model.ToString())
+        Ardak.Model.Enums.ProcedureStatus.Submitted => 
+            ("badge-subtle-secondary", "bi-send", "مُقدَّم"),
+        Ardak.Model.Enums.ProcedureStatus.InProgress => 
+            ("badge-subtle-primary", "bi-arrow-repeat", "قيد الإجراء"),
+        Ardak.Model.Enums.ProcedureStatus.PendingRequirements => 
+            ("badge-subtle-warning", "bi-exclamation-circle", "بانتظار متطلبات"),
+        Ardak.Model.Enums.ProcedureStatus.UnderReview => 
+            ("badge-subtle-info", "bi-search", "قيد المراجعة"),
+        Ardak.Model.Enums.ProcedureStatus.Approved => 
+            ("badge-subtle-success", "bi-check-circle", "معتمد"),
+        Ardak.Model.Enums.ProcedureStatus.Rejected => 
+            ("badge-subtle-danger", "bi-x-circle", "مرفوض"),
+        Ardak.Model.Enums.ProcedureStatus.Completed => 
+            ("badge-subtle-success", "bi-check-all", "مكتمل"),
+        Ardak.Model.Enums.ProcedureStatus.Cancelled => 
+            ("badge-subtle-secondary", "bi-slash-circle", "ملغى"),
+        _ => 
+            ("badge-subtle-secondary", "bi-dash-circle", Model.ToString())
     };
 }
-<span class="badge @cssClass">@label</span>
+<span class="badge @badgeClass d-inline-flex align-items-center gap-1">
+    <i class="bi @icon"></i>
+    <span>@label</span>
+</span>

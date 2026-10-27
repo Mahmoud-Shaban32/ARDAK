@@ -109,7 +109,7 @@ public class DocumentsController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Document uploaded securely.";
+            TempData["SuccessMessage"] = "تم رفع المستند وأرشفته بأمان بنجاح.";
             return RedirectToAction(nameof(Details), new { id = result.Data });
         }
 
@@ -160,7 +160,7 @@ public class DocumentsController : Controller
         var result = await _documentService.UpdateDocumentMetadataAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Document metadata updated successfully.";
+            TempData["SuccessMessage"] = "تم تحديث بيانات وتصنيف المستند بنجاح.";
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
@@ -178,11 +178,11 @@ public class DocumentsController : Controller
         var result = await _documentService.ArchiveDocumentAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Document archived successfully. Historical record is preserved.";
+            TempData["SuccessMessage"] = "تمت أرشفة المستند بنجاح مع الاحتفاظ بالسجل التاريخي.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to archive document.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت عملية أرشفة المستند.";
         }
 
         return RedirectToAction(nameof(Details), new { id });

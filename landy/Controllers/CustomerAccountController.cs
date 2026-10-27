@@ -34,7 +34,7 @@ public class CustomerAccountController : Controller
 
         if (!string.IsNullOrEmpty(customer.IdentityUserId))
         {
-            TempData["ErrorMessage"] = "This customer already has a linked portal login account.";
+            TempData["ErrorMessage"] = "هذا العميل لديه حساب تسجيل دخول مرتبط بالفعل.";
             return RedirectToAction("Index", "InternalDashboard");
         }
 
@@ -60,7 +60,7 @@ public class CustomerAccountController : Controller
         var result = await _identityService.CreateCustomerAccountAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Portal login provisioned successfully for customer '{model.Email}'.";
+            TempData["SuccessMessage"] = $"تم تفعيل حساب البوابة بنجاح للعميل '{model.Email}'.";
             return RedirectToAction("Index", "InternalDashboard");
         }
 
@@ -79,7 +79,7 @@ public class CustomerAccountController : Controller
         var result = await _identityService.ToggleCustomerAccountStatusAsync(customerId, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Customer account status updated.";
+            TempData["SuccessMessage"] = "تم تحديث حالة حساب العميل بنجاح.";
         }
         else
         {

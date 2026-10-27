@@ -1,6 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "سياسة الخصوصية وسرية البيانات";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-4 border-0 pb-0">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="feature-icon bg-primary-subtle text-primary p-3 rounded-3">
+                        <i class="bi bi-shield-check fs-3"></i>
+                    </div>
+                    <div>
+                        <h2 class="h4 fw-bold mb-1">سياسة الخصوصية وسرية البيانات</h2>
+                        <p class="text-muted small mb-0">منظومة أرضك لإدارة العقارات والمعاملات الرسمية</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4 pt-3">
+                <hr class="my-3 opacity-25" />
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="bi bi-lock text-primary me-2"></i>1. الالتزام بأعلى معايير السرية
+                    </h5>
+                    <p class="text-muted">
+                        نلتزم في منصة <strong>أرضك</strong> بالحفاظ التام على خصوصية وسرية كافة البيانات العقارية، وصكوك الملكية، والوثائق الرسمية، ومعلومات العملاء المسجلة في النظام. تخضع جميع المستندات لتصنيفات أمان دقيقة وتدقيق صارم لضمان عدم اطلاع أي طرف غير مصرح له عليها.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="bi bi-person-badge text-primary me-2"></i>2. مستويات الوصول والصلاحيات
+                    </h5>
+                    <p class="text-muted">
+                        يتم منح صلاحيات الوصول وفق مبدأ الحد الأدنى من الصلاحيات المطلوبة لإنجاز العمل. لا يمكن لعملاء المنصة الاطلاع إلا على العقارات والمعاملات والمستندات المعتمدة المرتبطة بهم بشكل مباشر فقط.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="bi bi-file-earmark-lock text-primary me-2"></i>3. أمن المستندات والتحقق الرقمي
+                    </h5>
+                    <p class="text-muted">
+                        يتم تخزين كافة الوثائق بصيغ مشفرة ومع التحقق من البصمة الرقمية (SHA-256) لمنع أي تعديل أو تلاعب، مع تسجيل سجل تدقيق إلكتروني كامل لأي إجراء تصفح أو تحميل.
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-end pt-3 border-top">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
+                        <i class="bi bi-house me-1"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

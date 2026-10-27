@@ -48,7 +48,7 @@ public class AdminManagementController : Controller
         var result = await _identityService.CreateAdminAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Admin account for '{model.Email}' was created successfully.";
+            TempData["SuccessMessage"] = $"تم إنشاء حساب المشرف '{model.Email}' بنجاح.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -72,7 +72,7 @@ public class AdminManagementController : Controller
         var result = await _identityService.ToggleAdminStatusAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Admin status updated successfully.";
+            TempData["SuccessMessage"] = "تم تحديث حالة حساب المشرف بنجاح.";
         }
         else
         {

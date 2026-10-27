@@ -31,47 +31,47 @@ public class DashboardService : IDashboardService
     {
         var today = DateTime.UtcNow.Date;
 
-        // 1. High-level counts via direct database COUNT queries (never load full tables)
-        var totalCustomersTask = _db.Customers.CountAsync();
-        var activeCustomersTask = _db.Customers.CountAsync(c => c.Status == CustomerStatus.Active);
+        // 1. High-level counts via direct database COUNT queries (sequential to avoid DbContext concurrency)
+        var totalCustomers = await _db.Customers.CountAsync();
+        var activeCustomers = await _db.Customers.CountAsync(c => c.Status == CustomerStatus.Active);
 
-        var totalPropertiesTask = _db.Properties.CountAsync();
-        var activePropertiesTask = _db.Properties.CountAsync(p => p.Status == PropertyStatus.Active);
+        var totalProperties = await _db.Properties.CountAsync();
+        var activeProperties = await _db.Properties.CountAsync(p => p.Status == PropertyStatus.Active);
 
-        var totalProceduresTask = _db.Procedures.CountAsync();
-        var totalDocumentsTask = _db.Documents.CountAsync(d => !d.IsArchived);
+        var totalProcedures = await _db.Procedures.CountAsync();
+        var totalDocuments = await _db.Documents.CountAsync(d => !d.IsArchived);
 
-        var pendingCountTask = _db.Procedures.CountAsync(p => PendingStatuses.Contains(p.Status));
-        var missingDocsCountTask = _db.Procedures.CountAsync(p =>
+        var pendingCount = await _db.Procedures.CountAsync(p => PendingStatuses.Contains(p.Status));
+        var missingDocsCount = await _db.Procedures.CountAsync(p =>
             p.MissingDocuments != null &&
             p.MissingDocuments != "" &&
             p.Status != ProcedureStatus.Completed &&
             p.Status != ProcedureStatus.Cancelled);
 
-        var overdueCountTask = _db.Procedures.CountAsync(p =>
+        var overdueCount = await _db.Procedures.CountAsync(p =>
             p.NextActionDeadline.HasValue &&
             p.NextActionDeadline.Value.Date < today &&
             p.Status != ProcedureStatus.Completed &&
             p.Status != ProcedureStatus.Cancelled);
 
         // 2. Groupings via database GROUP BY queries
-        var propertiesByTypeTask = _db.Properties
+        var propertiesByType = await _db.Properties
             .GroupBy(p => p.Type)
             .Select(g => new { Key = g.Key.ToString(), Count = g.Count() })
             .ToDictionaryAsync(x => x.Key, x => x.Count);
 
-        var propertiesByStatusTask = _db.Properties
+        var propertiesByStatus = await _db.Properties
             .GroupBy(p => p.Status)
             .Select(g => new { Key = g.Key.ToString(), Count = g.Count() })
             .ToDictionaryAsync(x => x.Key, x => x.Count);
 
-        var proceduresByStatusTask = _db.Procedures
+        var proceduresByStatus = await _db.Procedures
             .GroupBy(p => p.Status)
             .Select(g => new { Key = g.Key.ToString(), Count = g.Count() })
             .ToDictionaryAsync(x => x.Key, x => x.Count);
 
         // 3. Actionable Procedure Lists (projected directly and limited with Take)
-        var pendingProceduresTask = _db.Procedures
+        var pendingProcedures = await _db.Procedures
             .AsNoTracking()
             .Include(p => p.Property)
             .Where(p => PendingStatuses.Contains(p.Status))
@@ -82,7 +82,7 @@ public class DashboardService : IDashboardService
             .Select(p => MapToSummaryDto(p))
             .ToListAsync();
 
-        var missingDocsProceduresTask = _db.Procedures
+        var missingDocsProcedures = await _db.Procedures
             .AsNoTracking()
             .Include(p => p.Property)
             .Where(p =>
@@ -95,7 +95,7 @@ public class DashboardService : IDashboardService
             .Select(p => MapToSummaryDto(p))
             .ToListAsync();
 
-        var upcomingDeadlinesTask = _db.Procedures
+        var upcomingDeadlines = await _db.Procedures
             .AsNoTracking()
             .Include(p => p.Property)
             .Where(p =>
@@ -108,7 +108,7 @@ public class DashboardService : IDashboardService
             .ToListAsync();
 
         // 4. Recent Activities (recent status history & recent documents)
-        var recentHistoryTask = _db.ProcedureStatusHistories
+        var recentHistory = await _db.ProcedureStatusHistories
             .AsNoTracking()
             .Include(h => h.Procedure)
                 .ThenInclude(pr => pr!.Property)
@@ -116,7 +116,7 @@ public class DashboardService : IDashboardService
             .Take(topItems)
             .ToListAsync();
 
-        var recentDocsTask = _db.Documents
+        var recentDocs = await _db.Documents
             .AsNoTracking()
             .Include(d => d.Property)
             .Include(d => d.Customer)
@@ -124,30 +124,10 @@ public class DashboardService : IDashboardService
             .Take(topItems)
             .ToListAsync();
 
-        // Await all asynchronous aggregations concurrently
-        await Task.WhenAll(
-            totalCustomersTask,
-            activeCustomersTask,
-            totalPropertiesTask,
-            activePropertiesTask,
-            totalProceduresTask,
-            totalDocumentsTask,
-            pendingCountTask,
-            missingDocsCountTask,
-            overdueCountTask,
-            propertiesByTypeTask,
-            propertiesByStatusTask,
-            proceduresByStatusTask,
-            pendingProceduresTask,
-            missingDocsProceduresTask,
-            upcomingDeadlinesTask,
-            recentHistoryTask,
-            recentDocsTask);
-
         // Combine and sort recent activities
         var activities = new List<DashboardActivityDto>();
 
-        foreach (var h in recentHistoryTask.Result)
+        foreach (var h in recentHistory)
         {
             activities.Add(new DashboardActivityDto
             {
@@ -163,7 +143,7 @@ public class DashboardService : IDashboardService
             });
         }
 
-        foreach (var d in recentDocsTask.Result)
+        foreach (var d in recentDocs)
         {
             var target = d.Property != null ? $"Property {d.Property.ReferenceNumber}" : (d.Customer != null ? $"Customer {d.Customer.FullName}" : "Repository");
             activities.Add(new DashboardActivityDto
@@ -187,21 +167,21 @@ public class DashboardService : IDashboardService
 
         return new AdminDashboardDto
         {
-            TotalCustomers = totalCustomersTask.Result,
-            ActiveCustomers = activeCustomersTask.Result,
-            TotalProperties = totalPropertiesTask.Result,
-            ActiveProperties = activePropertiesTask.Result,
-            TotalProcedures = totalProceduresTask.Result,
-            PendingProceduresCount = pendingCountTask.Result,
-            ProceduresWithMissingDocsCount = missingDocsCountTask.Result,
-            OverdueDeadlinesCount = overdueCountTask.Result,
-            TotalDocuments = totalDocumentsTask.Result,
-            PropertiesByType = propertiesByTypeTask.Result,
-            PropertiesByStatus = propertiesByStatusTask.Result,
-            ProceduresByStatus = proceduresByStatusTask.Result,
-            PendingProcedures = pendingProceduresTask.Result,
-            ProceduresWithMissingDocuments = missingDocsProceduresTask.Result,
-            UpcomingDeadlines = upcomingDeadlinesTask.Result,
+            TotalCustomers = totalCustomers,
+            ActiveCustomers = activeCustomers,
+            TotalProperties = totalProperties,
+            ActiveProperties = activeProperties,
+            TotalProcedures = totalProcedures,
+            PendingProceduresCount = pendingCount,
+            ProceduresWithMissingDocsCount = missingDocsCount,
+            OverdueDeadlinesCount = overdueCount,
+            TotalDocuments = totalDocuments,
+            PropertiesByType = propertiesByType,
+            PropertiesByStatus = propertiesByStatus,
+            ProceduresByStatus = proceduresByStatus,
+            PendingProcedures = pendingProcedures,
+            ProceduresWithMissingDocuments = missingDocsProcedures,
+            UpcomingDeadlines = upcomingDeadlines,
             RecentActivities = sortedActivities
         };
     }

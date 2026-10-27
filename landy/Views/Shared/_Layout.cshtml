@@ -1,92 +1,140 @@
 @inject Ardak.Application.Interfaces.ICurrentUserService CurrentUser
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Ardak Internal System</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - نظام أرضك العقاري</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/landy.styles.css" asp-append-version="true" />
 </head>
-<body class="bg-light">
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark border-bottom shadow-sm mb-4">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand fw-bold text-white d-flex align-items-center" asp-controller="Account" asp-action="Login">
-                    <span class="badge bg-primary me-2">Ardak</span>
-                    <span>Internal Real-Estate</span>
+<body>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark ardak-navbar">
+            <div class="container-fluid px-lg-4 px-3">
+                <a class="ardak-brand" asp-controller="Home" asp-action="Index">
+                    <div class="ardak-logo-icon">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                    <div>
+                        <span class="ardak-brand-title">أرضك <span class="text-primary fw-light">|</span> Ardak</span>
+                        <span class="ardak-brand-subtitle">نظام إدارة العقارات المتطور</span>
+                    </div>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
+                
+                <button class="navbar-toggler border-0 shadow-none text-white p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <i class="bi bi-list fs-3"></i>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                
+                <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                         @if (CurrentUser.IsAuthenticated)
                         {
                             @if (CurrentUser.IsSuperAdmin || CurrentUser.IsAdmin)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="InternalDashboard" asp-action="Index">Dashboard</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="InternalDashboard" asp-action="Index">
+                                        <i class="bi bi-grid-1x2"></i>
+                                        <span>لوحة التحكم</span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="Customers" asp-action="Index">Customers</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="Customers" asp-action="Index">
+                                        <i class="bi bi-people"></i>
+                                        <span>العملاء</span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="Properties" asp-action="Index">Properties</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="Properties" asp-action="Index">
+                                        <i class="bi bi-houses"></i>
+                                        <span>العقارات</span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="Procedures" asp-action="Index">Procedures</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="Procedures" asp-action="Index">
+                                        <i class="bi bi-file-earmark-check"></i>
+                                        <span>المعاملات</span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="Documents" asp-action="Index">Documents</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="Documents" asp-action="Index">
+                                        <i class="bi bi-folder2-open"></i>
+                                        <span>المستندات</span>
+                                    </a>
                                 </li>
                             }
                             @if (CurrentUser.IsSuperAdmin)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="AdminManagement" asp-action="Index">Admin Console</a>
+                                    <a class="nav-link ardak-nav-item text-danger-emphasis" asp-controller="AdminManagement" asp-action="Index">
+                                        <i class="bi bi-shield-lock"></i>
+                                        <span>لوحة المشرفين</span>
+                                    </a>
                                 </li>
                             }
                             @if (CurrentUser.IsCustomer)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-white-50" asp-controller="CustomerPortal" asp-action="Index">My Customer Portal</a>
+                                    <a class="nav-link ardak-nav-item" asp-controller="CustomerPortal" asp-action="Index">
+                                        <i class="bi bi-person-badge"></i>
+                                        <span>بوابة العميل</span>
+                                    </a>
                                 </li>
                             }
                         }
                     </ul>
-                    <ul class="navbar-nav align-items-center">
+                    
+                    <ul class="navbar-nav align-items-lg-center gap-2">
                         @if (CurrentUser.IsAuthenticated)
                         {
-                            <li class="nav-item me-3 text-light small">
-                                <span class="text-white-50">Signed in as:</span>
-                                <strong>@CurrentUser.Email</strong>
-                                @if (CurrentUser.IsSuperAdmin)
-                                {
-                                    <span class="badge bg-danger ms-1">SuperAdmin</span>
-                                }
-                                else if (CurrentUser.IsAdmin)
-                                {
-                                    <span class="badge bg-info text-dark ms-1">Admin</span>
-                                }
-                                else if (CurrentUser.IsCustomer)
-                                {
-                                    <span class="badge bg-success ms-1">Customer</span>
-                                }
+                            <li class="nav-item">
+                                <div class="user-status-pill">
+                                    <i class="bi bi-person-circle fs-5 text-primary"></i>
+                                    <div class="d-flex flex-column text-end">
+                                        <span class="small fw-bold">@CurrentUser.Email</span>
+                                        <div class="mt-n1">
+                                            @if (CurrentUser.IsSuperAdmin)
+                                            {
+                                                <span class="badge bg-danger text-white py-0 px-2" style="font-size: 0.68rem;">مشرف عام</span>
+                                            }
+                                            else if (CurrentUser.IsAdmin)
+                                            {
+                                                <span class="badge bg-primary text-white py-0 px-2" style="font-size: 0.68rem;">مشرف</span>
+                                            }
+                                            else if (CurrentUser.IsCustomer)
+                                            {
+                                                <span class="badge bg-success text-white py-0 px-2" style="font-size: 0.68rem;">عميل</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-light btn-sm">Sign Out</button>
+                                    <button type="submit" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>خروج</span>
+                                    </button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-primary btn-sm px-3" asp-controller="Account" asp-action="Login">Sign In</a>
+                                <a class="btn btn-primary px-4 rounded-pill shadow-sm" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-left"></i>
+                                    <span>تسجيل الدخول</span>
+                                </a>
                             </li>
                         }
                     </ul>
@@ -94,17 +142,28 @@
             </div>
         </nav>
     </header>
-    <div class="container px-4">
-        <main role="main" class="pb-4">
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-white py-3 mt-auto">
-        <div class="container text-center small">
-            &copy; @DateTime.UtcNow.Year - Ardak Internal Real-Estate Management System &bull; Confidential &bull; Authorized Access Only
+    <footer class="ardak-footer mt-auto">
+        <div class="container-fluid px-lg-4 px-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary px-2">أرضك</span>
+                <span>&copy; @DateTime.UtcNow.Year - نظام أرضك المتكامل لإدارة العقارات والمعاملات</span>
+            </div>
+            <div class="d-flex gap-3 small text-muted">
+                <span><i class="bi bi-shield-check text-success me-1"></i>نظام آمن ومشفّر</span>
+                <span>&bull;</span>
+                <span>المملكة العربية السعودية</span>
+            </div>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -85,7 +85,7 @@ public class ProceduresController : Controller
         var result = await _procedureService.CreateProcedureAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Procedure record created successfully.";
+            TempData["SuccessMessage"] = "تم تسجيل المعاملة بنجاح.";
             return RedirectToAction(nameof(Details), new { id = result.Data });
         }
 
@@ -141,7 +141,7 @@ public class ProceduresController : Controller
         var result = await _procedureService.UpdateProcedureAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Procedure record updated successfully.";
+            TempData["SuccessMessage"] = "تم تحديث بيانات المعاملة بنجاح.";
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 

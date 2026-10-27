@@ -1,44 +1,60 @@
 @model CustomerDetailDto
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = $"Customer Details - {Model.FullName}";
+    ViewData["Title"] = $"بيانات العميل - {Model.FullName}";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">العملاء</a></li>
+        <li class="breadcrumb-item active text-muted">@Model.FullName</li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
-        <div class="d-flex align-items-center gap-2">
-            <h2 class="fw-bold mb-0">@Model.FullName</h2>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-person-circle text-primary me-2"></i>@Model.FullName
+            </h1>
             @switch (Model.Status)
             {
                 case CustomerStatus.Active:
-                    <span class="badge bg-success fs-6">Active</span>
+                    <span class="badge badge-subtle-success">نشط</span>
                     break;
                 case CustomerStatus.Inactive:
-                    <span class="badge bg-warning text-dark fs-6">Inactive</span>
+                    <span class="badge badge-subtle-warning">غير نشط</span>
                     break;
                 case CustomerStatus.Archived:
-                    <span class="badge bg-secondary fs-6">Archived</span>
+                    <span class="badge badge-subtle-secondary">مؤرشف</span>
                     break;
             }
         </div>
-        <p class="text-muted mb-0 small">Customer Reference: #CUST-@Model.Id.ToString("D5") &bull; Created: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm UTC")</p>
+        <p class="text-muted mb-0 small">
+            الرقم المرجعي: <code class="bg-light px-2 py-1 rounded">#CUST-@Model.Id.ToString("D5")</code> &bull; تاريخ الإنشاء: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")
+        </p>
     </div>
-    <div class="d-flex gap-2">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-            Edit Profile
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary rounded-pill">
+            <i class="bi bi-pencil-square"></i>
+            <span>تعديل البيانات</span>
         </a>
         @if (!Model.HasPortalAccount && Model.Status != CustomerStatus.Archived)
         {
-            <a asp-controller="CustomerAccount" asp-action="Provision" asp-route-customerId="@Model.Id" class="btn btn-primary">
-                Provision Portal Account
+            <a asp-controller="CustomerAccount" asp-action="Provision" asp-route-customerId="@Model.Id" class="btn btn-primary rounded-pill shadow-sm">
+                <i class="bi bi-person-badge"></i>
+                <span>إنشاء حساب للبوابة</span>
             </a>
         }
         @if (Model.Status == CustomerStatus.Archived)
         {
             <form asp-action="Restore" asp-route-id="@Model.Id" method="post" class="d-inline">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-success">
-                    Restore to Active
+                <button type="submit" class="btn btn-outline-success rounded-pill">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    <span>استعادة وتنشيط</span>
                 </button>
             </form>
         }
@@ -46,145 +62,170 @@
         {
             <form asp-action="Archive" asp-route-id="@Model.Id" method="post" class="d-inline">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Archive this customer record?');">
-                    Archive
+                <button type="submit" class="btn btn-outline-danger rounded-pill" onclick="return confirm('هل أنت متأكد من أرشفة سجل هذا العميل؟');">
+                    <i class="bi bi-archive"></i>
+                    <span>أرشفة</span>
                 </button>
             </form>
         }
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            Back to List
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-right"></i>
+            <span>القائمة</span>
         </a>
     </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <div>@TempData["SuccessMessage"]</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="row g-4">
-    <!-- Left Column: Customer Profile & Contact -->
+    <!-- بيانات العميل والتواصل -->
     <div class="col-lg-7">
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0">Client Information</h5>
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle text-primary fs-5"></i>
+                <span>بيانات العميل ومعلومات الاتصال</span>
             </div>
             <div class="card-body p-4">
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">Full Legal Name</div>
-                    <div class="col-sm-8 fw-semibold">@Model.FullName</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">Primary Phone</div>
-                    <div class="col-sm-8 fw-semibold">@Model.PhoneNumber</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">Email Address</div>
-                    <div class="col-sm-8">@(string.IsNullOrEmpty(Model.Email) ? "Not provided" : Model.Email)</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">Physical / Business Address</div>
-                    <div class="col-sm-8">@(string.IsNullOrEmpty(Model.Address) ? "Not provided" : Model.Address)</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">National ID / Tax Number</div>
-                    <div class="col-sm-8">@(string.IsNullOrEmpty(Model.NationalIdOrTaxNumber) ? "Not provided" : Model.NationalIdOrTaxNumber)</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 text-muted">Account Status</div>
-                    <div class="col-sm-8">@Model.Status</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 text-muted">Last Modified</div>
-                    <div class="col-sm-8">@(Model.ModifiedAtUtc.HasValue ? Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm UTC") : "Never")</div>
-                </div>
+                <dl class="row mb-0 g-3">
+                    <dt class="col-sm-4 text-muted small">الاسم الكامل / المنشأة</dt>
+                    <dd class="col-sm-8 fw-bold text-dark">@Model.FullName</dd>
+
+                    <dt class="col-sm-4 text-muted small">رقم الهاتف / الجوال</dt>
+                    <dd class="col-sm-8 font-monospace" dir="ltr">@Model.PhoneNumber</dd>
+
+                    <dt class="col-sm-4 text-muted small">البريد الإلكتروني</dt>
+                    <dd class="col-sm-8 font-monospace" dir="ltr">@(string.IsNullOrEmpty(Model.Email) ? "غير متوفر" : Model.Email)</dd>
+
+                    <dt class="col-sm-4 text-muted small">العنوان والمدينة</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Address) ? "غير متوفر" : Model.Address)</dd>
+
+                    <dt class="col-sm-4 text-muted small">الهوية / الرقم الضريبي</dt>
+                    <dd class="col-sm-8 font-monospace">@(string.IsNullOrEmpty(Model.NationalIdOrTaxNumber) ? "غير متوفر" : Model.NationalIdOrTaxNumber)</dd>
+
+                    <dt class="col-sm-4 text-muted small">حالة الحساب</dt>
+                    <dd class="col-sm-8">
+                        @switch (Model.Status)
+                        {
+                            case CustomerStatus.Active:
+                                <span class="badge badge-subtle-success">نشط</span>
+                                break;
+                            case CustomerStatus.Inactive:
+                                <span class="badge badge-subtle-warning">غير نشط</span>
+                                break;
+                            case CustomerStatus.Archived:
+                                <span class="badge badge-subtle-secondary">مؤرشف</span>
+                                break;
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted small">آخر تعديل</dt>
+                    <dd class="col-sm-8 text-muted">@(Model.ModifiedAtUtc.HasValue ? Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm") : "لم يُعدّل بعد")</dd>
+                </dl>
             </div>
         </div>
 
-        <!-- Associated Properties -->
+        <!-- العقارات المرتبطة -->
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <h5 class="fw-bold mb-0">Associated Properties</h5>
-                    <span class="badge bg-primary">@Model.PropertyCount Total</span>
+                <div class="d-flex align-items-center gap-2 fw-bold">
+                    <i class="bi bi-houses text-success fs-5"></i>
+                    <span>العقارات المرتبطة بالعميل</span>
+                    <span class="badge bg-primary rounded-pill">@Model.PropertyCount</span>
                 </div>
-                <a asp-controller="Properties" asp-action="Create" asp-route-customerId="@Model.Id" class="btn btn-sm btn-outline-primary">
-                    + Add Property
+                <a asp-controller="Properties" asp-action="Create" asp-route-customerId="@Model.Id" class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    <span>إضافة عقار للعميل</span>
                 </a>
             </div>
             <div class="card-body p-4">
                 @if (Model.PropertyTitles.Any())
                 {
-                    <ul class="list-group list-group-flush">
+                    <div class="list-group list-group-flush">
                         @foreach (var title in Model.PropertyTitles)
                         {
-                            <li class="list-group-item px-0">@title</li>
+                            <div class="list-group-item d-flex align-items-center gap-2 px-0 py-2 border-light">
+                                <i class="bi bi-building text-primary"></i>
+                                <span class="fw-semibold text-dark">@title</span>
+                            </div>
                         }
-                    </ul>
+                    </div>
                 }
                 else
                 {
-                    <p class="text-muted mb-0 small">No real-estate properties currently linked to this customer dossier.</p>
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-building-slash fs-2 d-block mb-1 text-secondary"></i>
+                        لا توجد عقارات مسجلة لهذا العميل حالياً.
+                    </div>
                 }
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Confidential Internal Notes & Portal Link -->
+    <!-- العمود الأيسر: الملاحظات الداخلية وحساب البوابة -->
     <div class="col-lg-5">
-        <!-- Internal Staff Notes (Confidential) -->
+        <!-- ملاحظات فريق العمل الداخلية (سرية) -->
         <div class="card shadow-sm border-0 border-top border-warning border-3 mb-4">
-            <div class="card-header bg-white py-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="fw-bold mb-0">Internal Staff Notes</h5>
-                    <span class="badge bg-warning text-dark">Confidential &bull; Staff Only</span>
+            <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2 fw-bold">
+                    <i class="bi bi-shield-lock text-warning fs-5"></i>
+                    <span>ملاحظات فريق العمل الداخلية</span>
                 </div>
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle small">خاص وسري</span>
             </div>
             <div class="card-body p-4">
                 @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
                 {
-                    <div class="p-3 bg-light rounded border">
+                    <div class="p-3 bg-light rounded-3 border">
                         <p class="mb-0 text-dark" style="white-space: pre-wrap;">@Model.InternalNotes</p>
                     </div>
                 }
                 else
                 {
-                    <p class="text-muted fst-italic mb-0 small">No internal notes entered for this customer.</p>
+                    <p class="text-muted fst-italic mb-0 small">لا توجد ملاحظات داخلية مسجلة لهذا العميل.</p>
                 }
                 <div class="mt-3 text-muted small">
-                    <em>Security Notice: These internal notes are protected and are strictly never visible in the customer portal.</em>
+                    <i class="bi bi-info-circle me-1"></i>
+                    تنبيه أمني: هذه الملاحظات خاصة بفريق العمل الداخلي فقط ولن تظهر للعميل في بوابته إطلاقاً.
                 </div>
             </div>
         </div>
 
-        <!-- Portal Account Status -->
+        <!-- حالة حساب بوابة العميل -->
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0">Portal Login Account</h5>
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-person-badge text-info fs-5"></i>
+                <span>حساب بوابة العميل الإلكترونية</span>
             </div>
             <div class="card-body p-4">
                 @if (Model.HasPortalAccount)
                 {
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="badge bg-success me-2">Linked</span>
-                        <span>Identity User ID: <code class="small">@Model.IdentityUserId</code></span>
+                    <div class="d-flex align-items-center mb-3 gap-2">
+                        <span class="badge badge-subtle-success">
+                            <i class="bi bi-check-circle me-1"></i>حساب مفعل
+                        </span>
+                        <span class="small text-muted font-monospace">@Model.IdentityUserId</span>
                     </div>
                     <p class="text-muted small mb-0">
-                        This client has an authorized login credential. They can access the customer portal to view approved documents and records.
+                        العميل يمتلك حساب دخول مصرح به للبوابة، ويستطيع متابعة عقاراته ومعاملاته وتحميل المستندات المعتمدة ذاتياً.
                     </p>
                 }
                 else
                 {
                     <div class="alert alert-light border mb-3">
-                        <p class="small text-muted mb-0">No portal login account has been provisioned yet for this business customer.</p>
+                        <p class="small text-muted mb-0">لم يتم تفعيل أو إنشاء حساب بوابة إلكترونية لهذا العميل بعد.</p>
                     </div>
                     @if (Model.Status != CustomerStatus.Archived)
                     {
-                        <a asp-controller="CustomerAccount" asp-action="Provision" asp-route-customerId="@Model.Id" class="btn btn-outline-primary btn-sm w-100">
-                            Provision Portal Access
+                        <a asp-controller="CustomerAccount" asp-action="Provision" asp-route-customerId="@Model.Id" class="btn btn-outline-primary rounded-pill w-100">
+                            <i class="bi bi-key me-1"></i>
+                            <span>تفعيل حساب وصول للبوابة</span>
                         </a>
                     }
                 }

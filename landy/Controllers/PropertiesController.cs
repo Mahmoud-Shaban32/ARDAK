@@ -95,7 +95,7 @@ public class PropertiesController : Controller
         var result = await _propertyService.CreatePropertyAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Property '{model.ReferenceNumber}' was successfully registered.";
+            TempData["SuccessMessage"] = $"تم تسجيل العقار '{model.ReferenceNumber}' بنجاح.";
             return RedirectToAction(nameof(Details), new { id = result.Data });
         }
 
@@ -156,7 +156,7 @@ public class PropertiesController : Controller
         var result = await _propertyService.UpdatePropertyAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Property '{model.ReferenceNumber}' was successfully updated.";
+            TempData["SuccessMessage"] = $"تم تحديث بيانات العقار '{model.ReferenceNumber}' بنجاح.";
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
@@ -173,11 +173,11 @@ public class PropertiesController : Controller
         var result = await _propertyService.ArchivePropertyAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Property record was archived.";
+            TempData["SuccessMessage"] = "تمت أرشفة سجل العقار بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to archive property record.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت عملية أرشفة العقار.";
         }
 
         return RedirectToAction(nameof(Index));
@@ -190,11 +190,11 @@ public class PropertiesController : Controller
         var result = await _propertyService.RestorePropertyAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Property record was restored to active status.";
+            TempData["SuccessMessage"] = "تمت استعادة سجل العقار وتنشيطه بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to restore property record.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت استعادة سجل العقار.";
         }
 
         return RedirectToAction(nameof(Details), new { id });
@@ -207,11 +207,11 @@ public class PropertiesController : Controller
         var result = await _propertyService.AssociateCustomerAsync(propertyId, customerId, role, ownershipPercentage, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Customer association added successfully.";
+            TempData["SuccessMessage"] = "تم ربط العميل بالعقار بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to associate customer.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت عملية ربط العميل بالعقار.";
         }
 
         return RedirectToAction(nameof(Details), new { id = propertyId });
@@ -224,11 +224,11 @@ public class PropertiesController : Controller
         var result = await _propertyService.RemoveCustomerAssociationAsync(propertyId, customerId, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Customer association removed.";
+            TempData["SuccessMessage"] = "تم إلغاء ربط العميل بالعقار بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to remove customer association.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت عملية إلغاء ربط العميل بالعقار.";
         }
 
         return RedirectToAction(nameof(Details), new { id = propertyId });

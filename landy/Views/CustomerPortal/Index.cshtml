@@ -1,96 +1,98 @@
 @model Ardak.Application.DTOs.CustomerPortalDashboardDto
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = "My Client Portal";
+    ViewData["Title"] = "بوابة العميل";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
         <h1 class="h3 fw-bold mb-1">
-            <i class="bi bi-person-badge text-primary me-2"></i>Welcome, @Model.Profile.FullName
+            <i class="bi bi-person-badge text-primary me-2"></i>مرحباً بك، @Model.Profile.FullName
         </h1>
         <p class="text-muted mb-0 small">
-            Ardak Client Portal &mdash; Verified property records and approved status tracking
+            بوابة عملاء أرضك &mdash; استعراض سجلات العقارات المعتمدة ومتابعة مسار المعاملات
         </p>
     </div>
-    <span class="badge bg-success-subtle text-success border border-success px-3 py-2 fs-7">
-        <i class="bi bi-shield-check me-1"></i> Verified Client Account
+    <span class="badge badge-subtle-success px-3 py-2 fs-7 d-inline-flex align-items-center gap-1 shadow-xs">
+        <i class="bi bi-shield-check"></i>
+        <span>حساب عميل معتمد وموثّق</span>
     </span>
 </div>
 
 <div class="row g-4">
-    {{!-- Customer Profile Summary Card --}}
+    <!-- Customer Profile Summary Card -->
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold">
-                <i class="bi bi-person-circle me-1 text-primary"></i> Account Profile
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle text-primary fs-5"></i>
+                <span>الملف الشخصي للعميل</span>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <span class="text-muted small d-block">Client Reference</span>
-                    <span class="fw-semibold">#CUST-@Model.Profile.Id.ToString("D5")</span>
+                <div class="mb-3 pb-2 border-bottom">
+                    <span class="text-muted small d-block">الرقم المرجعي للعميل</span>
+                    <span class="fw-bold font-monospace text-primary">#CUST-@Model.Profile.Id.ToString("D5")</span>
                 </div>
-                <div class="mb-3">
-                    <span class="text-muted small d-block">Full Name</span>
-                    <span class="fw-bold">@Model.Profile.FullName</span>
+                <div class="mb-3 pb-2 border-bottom">
+                    <span class="text-muted small d-block">الاسم الكامل</span>
+                    <span class="fw-bold text-dark">@Model.Profile.FullName</span>
                 </div>
-                <div class="mb-3">
-                    <span class="text-muted small d-block">Registered Email</span>
-                    <span>@Model.Profile.Email</span>
+                <div class="mb-3 pb-2 border-bottom">
+                    <span class="text-muted small d-block">البريد الإلكتروني</span>
+                    <span class="text-muted">@Model.Profile.Email</span>
                 </div>
-                <div class="mb-3">
-                    <span class="text-muted small d-block">Phone Number</span>
-                    <span>@(string.IsNullOrEmpty(Model.Profile.PhoneNumber) ? "Not provided" : Model.Profile.PhoneNumber)</span>
+                <div class="mb-3 pb-2 border-bottom">
+                    <span class="text-muted small d-block">رقم الهاتف</span>
+                    <span>@(string.IsNullOrEmpty(Model.Profile.PhoneNumber) ? "غير متوفر" : Model.Profile.PhoneNumber)</span>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(Model.Profile.NationalIdOrTaxNumber))
                 {
-                    <div class="mb-3">
-                        <span class="text-muted small d-block">National ID / Tax Number</span>
-                        <code>@Model.Profile.NationalIdOrTaxNumber</code>
+                    <div class="mb-3 pb-2 border-bottom">
+                        <span class="text-muted small d-block">رقم الهوية الوطنية / السجل الضريبي</span>
+                        <code class="bg-light p-1 rounded">@Model.Profile.NationalIdOrTaxNumber</code>
                     </div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.Profile.Address))
                 {
-                    <div class="mb-3">
-                        <span class="text-muted small d-block">Address</span>
+                    <div class="mb-3 pb-2 border-bottom">
+                        <span class="text-muted small d-block">العنوان</span>
                         <span>@Model.Profile.Address</span>
                     </div>
                 }
                 <div>
-                    <span class="text-muted small d-block">Client Since</span>
-                    <span>@Model.Profile.MemberSinceUtc.ToString("MMMM dd, yyyy")</span>
+                    <span class="text-muted small d-block">تاريخ التسجيل</span>
+                    <span>@Model.Profile.MemberSinceUtc.ToString("yyyy-MM-dd")</span>
                 </div>
             </div>
         </div>
     </div>
 
-    {{!-- Properties Overview --}}
+    <!-- Properties Overview -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <span class="fw-bold"><i class="bi bi-buildings me-1 text-success"></i> My Properties</span>
-                <span class="badge bg-light text-muted border">@Model.Properties.Count property record(s)</span>
+                <span class="fw-bold"><i class="bi bi-buildings me-2 text-success"></i>عقاراتي المسجلة</span>
+                <span class="badge badge-subtle-secondary">@Model.Properties.Count عقار مسجّل</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.Properties.Any())
                 {
                     <div class="text-center text-muted py-5">
-                        <i class="bi bi-building-slash fs-1 d-block mb-2"></i>
-                        No property records are currently associated with your account.
+                        <i class="bi bi-building-slash fs-1 d-block mb-2 text-secondary"></i>
+                        لا توجد سجلات عقارية مرتبطة بحسابك حالياً.
                     </div>
                 }
                 else
                 {
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
-                                    <th>Reference & Title</th>
-                                    <th>Location</th>
-                                    <th>Area</th>
-                                    <th>Ownership Role</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Details</th>
+                                    <th>الرقم المرجعي والعنوان</th>
+                                    <th>الموقع</th>
+                                    <th>المساحة</th>
+                                    <th>نوع الملكية</th>
+                                    <th>الحالة</th>
+                                    <th class="text-end">التفاصيل</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,26 +100,27 @@
                                 {
                                     <tr>
                                         <td>
-                                            <div class="fw-semibold">
-                                                <a asp-action="PropertyDetails" asp-route-id="@p.Id" class="text-decoration-none">
+                                            <div class="fw-bold">
+                                                <a asp-action="PropertyDetails" asp-route-id="@p.Id" class="text-decoration-none text-primary">
                                                     @p.ReferenceNumber
                                                 </a>
                                             </div>
-                                            <div class="small text-muted">@p.Title (@p.Type)</div>
+                                            <div class="small text-muted">@p.Title (@(p.Type == PropertyType.Land ? "أرض" : "فيلا"))</div>
                                         </td>
-                                        <td>@p.DistrictOrArea, @p.City</td>
+                                        <td>@p.DistrictOrArea، @p.City</td>
                                         <td>@p.AreaMeasurement.ToString("N0") @p.AreaUnit</td>
                                         <td>
-                                            <span class="badge bg-primary-subtle text-primary border border-primary">
+                                            <span class="badge badge-subtle-primary">
                                                 @p.OwnershipRole
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">@p.Status</span>
+                                            <span class="badge badge-subtle-secondary">@p.Status</span>
                                         </td>
                                         <td class="text-end">
-                                            <a asp-action="PropertyDetails" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">
-                                                View &rarr;
+                                            <a asp-action="PropertyDetails" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary py-1 px-3">
+                                                <span>عرض</span>
+                                                <i class="bi bi-arrow-left"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -130,19 +133,19 @@
         </div>
     </div>
 
-    {{!-- Approved Procedures Tracking --}}
+    <!-- Approved Procedures Tracking -->
     <div class="col-lg-6">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <span class="fw-bold"><i class="bi bi-clipboard2-check me-1 text-info"></i> Procedure Status Tracking</span>
-                <span class="badge bg-light text-muted border">@Model.ApprovedProcedures.Count tracked</span>
+                <span class="fw-bold"><i class="bi bi-clipboard2-check me-2 text-info"></i>متابعة مسار المعاملات</span>
+                <span class="badge badge-subtle-info">@Model.ApprovedProcedures.Count معاملة نشطة</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.ApprovedProcedures.Any())
                 {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-clipboard-x fs-2 d-block mb-1"></i>
-                        No public procedures are active or tracking is not enabled for your records.
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-clipboard-x fs-2 d-block mb-2 text-secondary"></i>
+                        لا توجد معاملات نشطة مفعّلة للمتابعة بحسابك حالياً.
                     </div>
                 }
                 else
@@ -150,28 +153,29 @@
                     <div class="list-group list-group-flush">
                         @foreach (var pr in Model.ApprovedProcedures)
                         {
-                            <div class="list-group-item p-3">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div class="list-group-item p-3 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
-                                        <span class="badge bg-secondary me-1">@pr.TypeLabel</span>
-                                        <strong>@pr.PropertyReferenceNumber</strong>
+                                        <span class="badge badge-subtle-primary me-1">@pr.TypeLabel</span>
+                                        <strong class="text-dark">@pr.PropertyReferenceNumber</strong>
                                     </div>
                                     <partial name="_ProcedureStatusBadge" model="pr.Status" />
                                 </div>
                                 <div class="small text-muted mb-2">
-                                    Authority: @(pr.ResponsibleAuthority ?? "Official Authority") &bull;
-                                    @(pr.SubmissionDate.HasValue ? $"Submitted {pr.SubmissionDate.Value:dd MMM yyyy}" : string.Empty)
+                                    الجهة: @(pr.ResponsibleAuthority ?? "جهة رسمية") &bull;
+                                    @(pr.SubmissionDate.HasValue ? $"تاريخ التقديم: {pr.SubmissionDate.Value:yyyy-MM-dd}" : string.Empty)
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(pr.CustomerUpdateNotes))
                                 {
                                     <div class="p-2 rounded bg-light border-start border-3 border-info small mb-2">
                                         <i class="bi bi-info-circle text-info me-1"></i>
-                                        <strong>Latest Update:</strong> @pr.CustomerUpdateNotes
+                                        <strong>آخر تحديث:</strong> @pr.CustomerUpdateNotes
                                     </div>
                                 }
                                 <div class="text-end">
-                                    <a asp-action="ProcedureDetails" asp-route-id="@pr.Id" class="btn btn-sm btn-outline-info">
-                                        View Status Details
+                                    <a asp-action="ProcedureDetails" asp-route-id="@pr.Id" class="btn btn-sm btn-outline-info py-1 px-3">
+                                        <span>تفاصيل الحالة</span>
+                                        <i class="bi bi-arrow-left"></i>
                                     </a>
                                 </div>
                             </div>
@@ -182,31 +186,31 @@
         </div>
     </div>
 
-    {{!-- Approved Documents --}}
+    <!-- Approved Documents -->
     <div class="col-lg-6">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <span class="fw-bold"><i class="bi bi-file-earmark-arrow-down me-1 text-success"></i> Approved Documents</span>
-                <span class="badge bg-light text-muted border">@Model.ApprovedDocuments.Count available</span>
+                <span class="fw-bold"><i class="bi bi-file-earmark-arrow-down me-2 text-success"></i>المستندات والصكوك المعتمدة</span>
+                <span class="badge badge-subtle-success">@Model.ApprovedDocuments.Count مستند متاح</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.ApprovedDocuments.Any())
                 {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-folder-check fs-2 d-block mb-1"></i>
-                        No client-approved documents are available for download at this time.
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-folder-check fs-2 d-block mb-2 text-secondary"></i>
+                        لا توجد مستندات معتمدة متاحة للتحميل حالياً.
                     </div>
                 }
                 else
                 {
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
-                                    <th>Document Title</th>
-                                    <th>Type</th>
-                                    <th>Size</th>
-                                    <th class="text-end">Download</th>
+                                    <th>عنوان المستند</th>
+                                    <th>النوع</th>
+                                    <th>الحجم</th>
+                                    <th class="text-end">تحميل</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -214,14 +218,14 @@
                                 {
                                     <tr>
                                         <td>
-                                            <div class="fw-semibold">@doc.Title</div>
+                                            <div class="fw-bold text-dark">@doc.Title</div>
                                             <div class="small text-muted">@doc.OriginalFileName</div>
                                         </td>
                                         <td><span class="badge bg-light text-dark border">@doc.DocumentType</span></td>
                                         <td class="small text-muted">@doc.FormattedFileSize</td>
                                         <td class="text-end">
-                                            <a asp-action="DownloadDocument" asp-route-id="@doc.Id" class="btn btn-sm btn-success">
-                                                <i class="bi bi-download me-1"></i> Download
+                                            <a asp-action="DownloadDocument" asp-route-id="@doc.Id" class="btn btn-sm btn-success py-1 px-3 shadow-xs">
+                                                <i class="bi bi-download me-1"></i> تحميل
                                             </a>
                                         </td>
                                     </tr>

@@ -1,24 +1,40 @@
 @model CreateCustomerDto
 @{
-    ViewData["Title"] = "Register New Customer";
+    ViewData["Title"] = "تسجيل عميل جديد";
 }
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">العملاء</a></li>
+        <li class="breadcrumb-item active text-muted">تسجيل عميل جديد</li>
+    </ol>
+</nav>
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold mb-0">Register New Customer</h3>
-                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
+            <div class="card-header bg-white py-3 fw-bold d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus text-primary fs-5"></i>
+                    <span>تسجيل عميل جديد في نظام أرضك</span>
                 </div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-right"></i> القائمة
+                </a>
+            </div>
+            <div class="card-body p-4">
                 <p class="text-muted small mb-4">
-                    Register an official business customer record into Ardak. Accidental duplicates by phone number or email are prevented.
+                    إضافة سجل عميل جديد في منصة <strong>أرضك</strong>. يتم التحقق لمنع تكرار رقم الجوال أو البريد الإلكتروني.
                 </p>
 
                 @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
                 {
-                    <div class="alert alert-danger" role="alert">
-                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <div>
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
                     </div>
                 }
 
@@ -27,49 +43,52 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="FullName" class="form-label fw-semibold"></label>
-                            <input asp-for="FullName" class="form-control" placeholder="Legal client / business name" autofocus />
-                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                            <label asp-for="FullName" class="form-label fw-bold small text-muted">الاسم الكامل / اسم المنشأة <span class="text-danger">*</span></label>
+                            <input asp-for="FullName" class="form-control" placeholder="اسم العميل الرباعي أو الاسم التجاري" autofocus />
+                            <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="+966 50 123 4567" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            <label asp-for="PhoneNumber" class="form-label fw-bold small text-muted">رقم الهاتف الجوال <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control font-monospace" placeholder="05XXXXXXXX" dir="ltr" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold"></label>
-                            <input asp-for="Email" class="form-control" placeholder="client@company.com" />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <label asp-for="Email" class="form-label fw-bold small text-muted">البريد الإلكتروني</label>
+                            <input asp-for="Email" class="form-control" placeholder="client@domain.com" dir="ltr" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="NationalIdOrTaxNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="NationalIdOrTaxNumber" class="form-control" placeholder="National ID / Commercial Reg / Tax #" />
-                            <span asp-validation-for="NationalIdOrTaxNumber" class="text-danger small"></span>
+                            <label asp-for="NationalIdOrTaxNumber" class="form-label fw-bold small text-muted">الهوية الوطنية / السجل التجاري / الرقم الضريبي</label>
+                            <input asp-for="NationalIdOrTaxNumber" class="form-control font-monospace" placeholder="10XXXXXXXX" dir="ltr" />
+                            <span asp-validation-for="NationalIdOrTaxNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Address" class="form-label fw-semibold"></label>
-                        <input asp-for="Address" class="form-control" placeholder="District, Street, City" />
-                        <span asp-validation-for="Address" class="text-danger small"></span>
+                        <label asp-for="Address" class="form-label fw-bold small text-muted">العنوان والمدينة</label>
+                        <input asp-for="Address" class="form-control" placeholder="المدينة، الحي، الشارع" />
+                        <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex align-items-center mb-1">
-                            <label asp-for="InternalNotes" class="form-label fw-semibold mb-0"></label>
-                            <span class="badge bg-warning text-dark ms-2">Staff Only &bull; Confidential</span>
+                            <label asp-for="InternalNotes" class="form-label fw-bold small text-muted mb-0">ملاحظات داخلية لفريق العمل</label>
+                            <span class="badge badge-subtle-danger ms-2">سري للغاية &bull; خاص بالموظفين</span>
                         </div>
-                        <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="Enter private internal notes, background information, or preliminary observations..."></textarea>
-                        <span asp-validation-for="InternalNotes" class="text-danger small"></span>
-                        <div class="form-text">This information is strictly confidential and will never be shown on the customer portal.</div>
+                        <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="ملاحظات سرية، معلومات إضافية عن العميل، شروط خاصة..."></textarea>
+                        <span asp-validation-for="InternalNotes" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-text text-muted">هذه الملاحظات مخصصة لموظفي النظام فقط ولا تظهر للمستفيد في بوابته نهائياً.</div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-4">Save Customer Record</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">إلغاء</a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow">
+                            <i class="bi bi-check2-circle"></i>
+                            <span>حفظ بيانات العميل</span>
+                        </button>
                     </div>
                 </form>
             </div>

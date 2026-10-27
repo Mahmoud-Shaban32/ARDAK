@@ -1,16 +1,17 @@
 @model Ardak.Application.DTOs.DocumentDetailDto
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = $"Document – {Model.Title}";
+    ViewData["Title"] = $"تفاصيل المستند – {Model.Title}";
 }
 
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">Documents</a></li>
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">المستندات</a></li>
         @if (Model.PropertyId.HasValue)
         {
             <li class="breadcrumb-item">
-                <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId">
+                <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none">
                     @Model.PropertyReferenceNumber
                 </a>
             </li>
@@ -18,106 +19,117 @@
         @if (Model.CustomerId.HasValue)
         {
             <li class="breadcrumb-item">
-                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId">
+                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="text-decoration-none">
                     @Model.CustomerName
                 </a>
             </li>
         }
-        <li class="breadcrumb-item active">@Model.Title</li>
+        <li class="breadcrumb-item active text-muted">@Model.Title</li>
     </ol>
 </nav>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <div>@TempData["SuccessMessage"]</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+        <div>@TempData["ErrorMessage"]</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="d-flex justify-content-between align-items-start mb-4">
+<!-- Page Header Box -->
+<div class="page-header-box d-flex justify-content-between align-items-start flex-wrap gap-3">
     <div>
-        <h1 class="h3 mb-1">
-            <i class="bi bi-file-earmark-lock2 me-2"></i>@Model.Title
+        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-file-earmark-lock2 text-primary me-1"></i>@Model.Title
+            </h1>
             <partial name="_ConfidentialityBadge" model="Model.ConfidentialityLevel" />
             @if (Model.IsArchived)
             {
-                <span class="badge bg-dark ms-1">Archived</span>
+                <span class="badge bg-secondary ms-1">مؤرشف</span>
             }
-        </h1>
-        <p class="text-muted mb-0">
-            Document Type: <span class="badge bg-secondary">@Model.TypeLabel</span>
+        </div>
+        <p class="text-muted mb-0 small">
+            نوع المستند: <span class="badge badge-subtle-primary">@Model.TypeLabel</span>
             @if (!string.IsNullOrWhiteSpace(Model.ReferenceNumber))
             {
-                <span class="ms-2">Ref #: <code>@Model.ReferenceNumber</code></span>
+                <span class="ms-2 font-monospace">رقم المرجع: <code>@Model.ReferenceNumber</code></span>
             }
         </p>
     </div>
-    <div class="d-flex gap-2">
-        <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-success">
-            <i class="bi bi-download me-1"></i> Download File
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-success rounded-pill shadow-xs">
+            <i class="bi bi-download me-1"></i> تحميل الملف
         </a>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-            <i class="bi bi-pencil me-1"></i> Edit Metadata
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary rounded-pill">
+            <i class="bi bi-pencil me-1"></i> تعديل البيانات
         </a>
         @if (!Model.IsArchived)
         {
             <form asp-action="Archive" asp-route-id="@Model.Id" method="post" class="d-inline"
-                  onsubmit="return confirm('Archive this document? It will be marked as archived and preserved for historical compliance.');">
+                  onsubmit="return confirm('أرشفة هذا المستند؟ سيتم حفظه في الأرشيف التاريخي للنظام.');">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bi bi-archive me-1"></i> Archive
+                <button type="submit" class="btn btn-outline-danger rounded-pill">
+                    <i class="bi bi-archive me-1"></i> أرشفة
                 </button>
             </form>
         }
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-right"></i> القائمة
+        </a>
     </div>
 </div>
 
 <div class="row g-4">
-    {{!-- Document Info --}}
+    <!-- معلومات المستند والسرية -->
     <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold"><i class="bi bi-info-circle me-1"></i> Metadata & Classification</div>
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle text-primary fs-5"></i>
+                <span>بيانات التعريف والسرية</span>
+            </div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-5">Type</dt>
-                    <dd class="col-sm-7">@Model.TypeLabel</dd>
+                    <dt class="col-sm-5 text-muted small">نوع المستند</dt>
+                    <dd class="col-sm-7 fw-bold">@Model.TypeLabel</dd>
 
-                    <dt class="col-sm-5">Reference #</dt>
-                    <dd class="col-sm-7">@(Model.ReferenceNumber ?? "—")</dd>
+                    <dt class="col-sm-5 text-muted small">رقم المرجع</dt>
+                    <dd class="col-sm-7 font-monospace">@(Model.ReferenceNumber ?? "—")</dd>
 
-                    <dt class="col-sm-5">Confidentiality</dt>
+                    <dt class="col-sm-5 text-muted small">مستوى السرية</dt>
                     <dd class="col-sm-7">
                         <partial name="_ConfidentialityBadge" model="Model.ConfidentialityLevel" />
                     </dd>
 
-                    <dt class="col-sm-5">Customer Visibility</dt>
+                    <dt class="col-sm-5 text-muted small">ظهور المستند للعميل</dt>
                     <dd class="col-sm-7">
                         @if (Model.IsCustomerVisible)
                         {
-                            <span class="badge bg-success-subtle text-success border border-success">
-                                <i class="bi bi-eye me-1"></i>Visible to Authorized Customer
+                            <span class="badge badge-subtle-success">
+                                <i class="bi bi-eye me-1"></i>مرئي في بوابة العميل
                             </span>
                         }
                         else
                         {
-                            <span class="badge bg-light text-muted border">
-                                <i class="bi bi-eye-slash me-1"></i>Private (Staff Only)
+                            <span class="badge badge-subtle-secondary">
+                                <i class="bi bi-eye-slash me-1"></i>داخلي فقط (للموظفين)
                             </span>
                         }
                     </dd>
 
                     @if (!string.IsNullOrWhiteSpace(Model.Description))
                     {
-                        <dt class="col-sm-5">Description</dt>
+                        <dt class="col-sm-5 text-muted small">الوصف والملخص</dt>
                         <dd class="col-sm-7">@Model.Description</dd>
                     }
                 </dl>
@@ -125,87 +137,93 @@
         </div>
     </div>
 
-    {{!-- File Details & Integrity --}}
+    <!-- المواصفات الفنية للملف -->
     <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold"><i class="bi bi-shield-check me-1"></i> File Technical Specifications</div>
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-success fs-5"></i>
+                <span>المواصفات الفنية والتكامل الرقمي</span>
+            </div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-5">Original Filename</dt>
-                    <dd class="col-sm-7"><code>@Model.OriginalFileName</code></dd>
+                    <dt class="col-sm-5 text-muted small">اسم الملف الأصلي</dt>
+                    <dd class="col-sm-7 font-monospace"><code>@Model.OriginalFileName</code></dd>
 
-                    <dt class="col-sm-5">File Size</dt>
-                    <dd class="col-sm-7">@Model.FormattedFileSize (@Model.FileSizeBytes.ToString("N0") bytes)</dd>
+                    <dt class="col-sm-5 text-muted small">حجم الملف</dt>
+                    <dd class="col-sm-7 font-monospace">@Model.FormattedFileSize (@Model.FileSizeBytes.ToString("N0") بايت)</dd>
 
-                    <dt class="col-sm-5">MIME Type</dt>
-                    <dd class="col-sm-7"><code>@Model.ContentType</code></dd>
+                    <dt class="col-sm-5 text-muted small">نوع المحتوى (MIME)</dt>
+                    <dd class="col-sm-7 font-monospace"><code>@Model.ContentType</code></dd>
 
-                    <dt class="col-sm-5">Extension</dt>
-                    <dd class="col-sm-7"><code>@Model.FileExtension</code></dd>
+                    <dt class="col-sm-5 text-muted small">امتداد الملف</dt>
+                    <dd class="col-sm-7 font-monospace"><code>@Model.FileExtension</code></dd>
 
                     @if (!string.IsNullOrWhiteSpace(Model.ChecksumSha256))
                     {
-                        <dt class="col-sm-5">SHA-256 Hash</dt>
-                        <dd class="col-sm-7"><code class="small text-break">@Model.ChecksumSha256</code></dd>
+                        <dt class="col-sm-5 text-muted small">بصمة التشفير (SHA-256)</dt>
+                        <dd class="col-sm-7"><code class="small text-break" dir="ltr">@Model.ChecksumSha256</code></dd>
                     }
                 </dl>
             </div>
         </div>
     </div>
 
-    {{!-- Entity Associations --}}
+    <!-- الكيانات المرتبطة -->
     <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header fw-semibold"><i class="bi bi-link-45deg me-1"></i> Associated Entities</div>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-link-45deg text-primary fs-5"></i>
+                <span>الارتباط بالعملاء والعقارات والمعاملات</span>
+            </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-light">
-                            <div class="small text-muted fw-semibold">Customer</div>
+                        <div class="p-3 border rounded-3 bg-light h-100">
+                            <div class="small text-muted fw-bold mb-1">العميل المرتبط</div>
                             @if (Model.CustomerId.HasValue)
                             {
-                                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="fw-bold">
-                                    @Model.CustomerName (#@Model.CustomerId)
+                                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="fw-bold text-decoration-none text-primary">
+                                    <i class="bi bi-person me-1"></i>@Model.CustomerName (#@Model.CustomerId)
                                 </a>
                             }
                             else
                             {
-                                <span class="text-muted">Not associated with a specific customer.</span>
+                                <span class="text-muted small">غير مرتبط بعميل محدد.</span>
                             }
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-light">
-                            <div class="small text-muted fw-semibold">Property</div>
+                        <div class="p-3 border rounded-3 bg-light h-100">
+                            <div class="small text-muted fw-bold mb-1">العقار المرتبط</div>
                             @if (Model.PropertyId.HasValue)
                             {
-                                <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="fw-bold">
-                                    @Model.PropertyReferenceNumber
+                                <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="fw-bold text-decoration-none text-primary">
+                                    <i class="bi bi-houses me-1"></i>@Model.PropertyReferenceNumber
                                 </a>
                                 <div class="small text-muted">@Model.PropertyTitle</div>
                             }
                             else
                             {
-                                <span class="text-muted">Not associated with a property.</span>
+                                <span class="text-muted small">غير مرتبط بعقار محدد.</span>
                             }
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-light">
-                            <div class="small text-muted fw-semibold">Legal / Administrative Procedure</div>
+                        <div class="p-3 border rounded-3 bg-light h-100">
+                            <div class="small text-muted fw-bold mb-1">المعاملة القانونية المرتبطة</div>
                             @if (Model.ProcedureId.HasValue)
                             {
-                                <a asp-controller="Procedures" asp-action="Details" asp-route-id="@Model.ProcedureId" class="fw-bold">
-                                    #@Model.ProcedureId – @Model.ProcedureTypeLabel
+                                <a asp-controller="Procedures" asp-action="Details" asp-route-id="@Model.ProcedureId" class="fw-bold text-decoration-none text-primary">
+                                    <i class="bi bi-clipboard2-check me-1"></i>#@Model.ProcedureId – @Model.ProcedureTypeLabel
                                 </a>
                                 @if (!string.IsNullOrWhiteSpace(Model.ProcedureApplicationNumber))
                                 {
-                                    <div class="small text-muted">App #: @Model.ProcedureApplicationNumber</div>
+                                    <div class="small text-muted font-monospace">رقم الطلب: @Model.ProcedureApplicationNumber</div>
                                 }
                             }
                             else
                             {
-                                <span class="text-muted">Not associated with a procedure.</span>
+                                <span class="text-muted small">غير مرتبط بمعاملة محددة.</span>
                             }
                         </div>
                     </div>
@@ -214,41 +232,45 @@
         </div>
     </div>
 
-    {{!-- Confidential Internal Notes --}}
+    <!-- ملاحظات سرية للموظفين إن وجدت -->
     @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
     {
         <div class="col-12">
-            <div class="card shadow-sm border-info">
-                <div class="card-header fw-semibold text-info-emphasis bg-info-subtle">
-                    <i class="bi bi-lock me-1"></i> Internal Staff Notes (Confidential)
+            <div class="card shadow-sm border-0 border-start border-4 border-danger">
+                <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2 text-danger">
+                    <i class="bi bi-shield-lock-fill fs-5"></i>
+                    <span>ملاحظات داخلية لفريق العمل (سري)</span>
                 </div>
                 <div class="card-body">
-                    <p class="mb-0" style="white-space: pre-wrap;">@Model.InternalNotes</p>
+                    <p class="mb-0 text-muted" style="white-space: pre-wrap;">@Model.InternalNotes</p>
                 </div>
             </div>
         </div>
     }
 
-    {{!-- Audit & Archival Details --}}
+    <!-- سجل التدقيق والأرشفة -->
     <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header fw-semibold"><i class="bi bi-clock-history me-1"></i> Audit Information</div>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-secondary fs-5"></i>
+                <span>بيانات التدقيق والنشاط</span>
+            </div>
             <div class="card-body">
                 <dl class="row mb-0">
-                    <dt class="col-sm-3">Uploaded</dt>
-                    <dd class="col-sm-9">@Model.UploadedAtUtc.ToString("dd MMM yyyy HH:mm") UTC by <code>@(Model.UploadedByUserId ?? "system")</code></dd>
+                    <dt class="col-sm-3 text-muted small">تاريخ الرفع</dt>
+                    <dd class="col-sm-9 small font-monospace">@Model.UploadedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC بواسطة <code>@(Model.UploadedByUserId ?? "النظام")</code></dd>
 
                     @if (Model.ModifiedAtUtc.HasValue)
                     {
-                        <dt class="col-sm-3">Last Modified</dt>
-                        <dd class="col-sm-9">@Model.ModifiedAtUtc.Value.ToString("dd MMM yyyy HH:mm") UTC by <code>@(Model.ModifiedByUserId ?? "system")</code></dd>
+                        <dt class="col-sm-3 text-muted small">آخر تعديل</dt>
+                        <dd class="col-sm-9 small font-monospace">@Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm") UTC بواسطة <code>@(Model.ModifiedByUserId ?? "النظام")</code></dd>
                     }
 
                     @if (Model.IsArchived)
                     {
-                        <dt class="col-sm-3 text-danger">Archived</dt>
-                        <dd class="col-sm-9 text-danger">
-                            @(Model.ArchivedAtUtc.HasValue ? Model.ArchivedAtUtc.Value.ToString("dd MMM yyyy HH:mm") : "Yes") UTC by <code>@(Model.ArchivedByUserId ?? "staff")</code>
+                        <dt class="col-sm-3 text-danger small">تاريخ الأرشفة</dt>
+                        <dd class="col-sm-9 text-danger small font-monospace">
+                            @(Model.ArchivedAtUtc.HasValue ? Model.ArchivedAtUtc.Value.ToString("yyyy-MM-dd HH:mm") : "نعم") UTC بواسطة <code>@(Model.ArchivedByUserId ?? "الموظف")</code>
                         </dd>
                     }
                 </dl>

@@ -1,51 +1,86 @@
 @model landy.Models.LoginViewModel
 @{
-    ViewData["Title"] = "Sign In - Ardak Internal Portal";
+    ViewData["Title"] = "تسجيل الدخول - نظام أرضك";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold text-primary">Ardak</h3>
-                    <p class="text-muted small">Internal Real-Estate Management & Customer Portal</p>
-                </div>
+<div class="login-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8">
+                <div class="card login-card border-0 shadow-lg">
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Brand Header -->
+                        <div class="text-center mb-4">
+                            <div class="ardak-logo-icon mx-auto mb-3" style="width: 58px; height: 58px; font-size: 1.85rem; border-radius: 16px;">
+                                <i class="bi bi-buildings"></i>
+                            </div>
+                            <h2 class="fw-bold mb-1">أرضك <span class="text-primary">|</span> Ardak</h2>
+                            <p class="text-muted small">نظام إدارة العقارات الداخلي وبوابة المستفيدين</p>
+                        </div>
 
-                @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
-                {
-                    <div class="alert alert-danger" role="alert">
-                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                        <!-- Alerts -->
+                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 border-0 shadow-sm" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                                <div>
+                                    @Html.ValidationSummary(true, "", new { @class = "mb-0 list-unstyled" })
+                                </div>
+                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <!-- Login Form -->
+                        <form asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label fw-bold small text-muted">البريد الإلكتروني</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-envelope text-primary"></i>
+                                    </span>
+                                    <input asp-for="Email" class="form-control border-start-0" placeholder="user@ardak.internal" autocomplete="email" autofocus dir="ltr" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label fw-bold small text-muted">كلمة المرور</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-lock text-primary"></i>
+                                    </span>
+                                    <input asp-for="Password" class="form-control border-start-0" placeholder="••••••••" autocomplete="current-password" dir="ltr" id="loginPassword" />
+                                    <button class="btn btn-outline-secondary border-start-0 border-end" type="button" onclick="togglePasswordVisibility()" title="إظهار / إخفاء كلمة المرور">
+                                        <i class="bi bi-eye" id="passwordToggleIcon"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="mb-4 d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input asp-for="RememberMe" class="form-check-input" />
+                                    <label asp-for="RememberMe" class="form-check-label small text-muted">تذكر تسجيل الدخول</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg shadow">
+                                    <span>دخول للنظام</span>
+                                    <i class="bi bi-arrow-left"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <div class="d-flex align-items-center justify-content-center gap-2 text-muted small">
+                                <i class="bi bi-shield-check text-success"></i>
+                                <span>نظام داخلي محمي ومراقب &bull; الوصول للمصرح لهم فقط</span>
+                            </div>
+                        </div>
                     </div>
-                }
-
-                <form asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                    @Html.AntiForgeryToken()
-
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label fw-semibold"></label>
-                        <input asp-for="Email" class="form-control" placeholder="name@ardak.internal" autocomplete="email" autofocus />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label fw-semibold"></label>
-                        <input asp-for="Password" class="form-control" placeholder="••••••••" autocomplete="current-password" />
-                        <span asp-validation-for="Password" class="text-danger small"></span>
-                    </div>
-
-                    <div class="mb-3 form-check">
-                        <input asp-for="RememberMe" class="form-check-input" />
-                        <label asp-for="RememberMe" class="form-check-label"></label>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
-                    </div>
-                </form>
-
-                <div class="mt-4 pt-3 border-top text-center text-muted small">
-                    <p class="mb-0">This is an authorized-access internal system. Public registration is strictly disabled.</p>
                 </div>
             </div>
         </div>
@@ -54,4 +89,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePasswordVisibility() {
+            const input = document.getElementById('loginPassword');
+            const icon = document.getElementById('passwordToggleIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
 }

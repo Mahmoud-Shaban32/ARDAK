@@ -65,7 +65,7 @@ public class CustomersController : Controller
         var result = await _customerService.CreateCustomerAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Customer '{model.FullName}' was successfully created.";
+            TempData["SuccessMessage"] = $"تم إنشاء سجل العميل '{model.FullName}' بنجاح.";
             return RedirectToAction(nameof(Details), new { id = result.Data });
         }
 
@@ -109,7 +109,7 @@ public class CustomersController : Controller
         var result = await _customerService.UpdateCustomerAsync(model, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = $"Customer '{model.FullName}' was successfully updated.";
+            TempData["SuccessMessage"] = $"تم تحديث بيانات العميل '{model.FullName}' بنجاح.";
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
@@ -124,11 +124,11 @@ public class CustomersController : Controller
         var result = await _customerService.ArchiveCustomerAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Customer record was archived.";
+            TempData["SuccessMessage"] = "تمت أرشفة سجل العميل بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to archive customer record.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت عملية أرشفة سجل العميل.";
         }
 
         return RedirectToAction(nameof(Index));
@@ -141,11 +141,11 @@ public class CustomersController : Controller
         var result = await _customerService.RestoreCustomerAsync(id, _currentUserService.UserId!);
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Customer record was restored to active status.";
+            TempData["SuccessMessage"] = "تمت استعادة سجل العميل وتنشيطه بنجاح.";
         }
         else
         {
-            TempData["ErrorMessage"] = result.Error ?? "Failed to restore customer record.";
+            TempData["ErrorMessage"] = result.Error ?? "فشلت استعادة سجل العميل.";
         }
 
         return RedirectToAction(nameof(Details), new { id });

@@ -1,84 +1,96 @@
 @model IReadOnlyList<AdminUserDto>
+@using Ardak.Model.Constants
 @{
-    ViewData["Title"] = "Admin Management (SuperAdmin Only)";
+    ViewData["Title"] = "إدارة المشرفين (المشرف العام)";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
-        <h2 class="fw-bold mb-1">Administrative Accounts</h2>
-        <p class="text-muted mb-0">Manage SuperAdmin and Admin accounts. Only SuperAdmin can access this console.</p>
+        <h2 class="h3 fw-bold mb-1">
+            <i class="bi bi-shield-lock text-danger me-2"></i>إدارة حسابات المشرفين
+        </h2>
+        <p class="text-muted mb-0 small">إدارة وتعيين المشرفين والمشرفين العامين &bull; وصول مقصور على المشرف العام فقط</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">
-        + Provision New Admin
+    <a asp-action="Create" class="btn btn-primary rounded-pill shadow-sm">
+        <i class="bi bi-person-plus-fill me-1"></i>
+        <span>إنشاء حساب مشرف جديد</span>
     </a>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <div>@TempData["SuccessMessage"]</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+        <div>@TempData["ErrorMessage"]</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="card shadow-sm border-0">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+            <thead>
                 <tr>
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created (UTC)</th>
-                    <th class="text-end">Actions</th>
+                    <th>الاسم الكامل</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الدور والصلاحية</th>
+                    <th>الحالة</th>
+                    <th>تاريخ الإنشاء (UTC)</th>
+                    <th class="text-end">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var admin in Model)
                 {
                     <tr>
-                        <td class="fw-semibold">
+                        <td class="fw-bold">
                             @admin.FullName
                             @if (admin.IsPrimarySuperAdmin)
                             {
-                                <span class="badge bg-warning text-dark ms-1">Primary SuperAdmin</span>
+                                <span class="badge bg-warning text-dark ms-1">مشرف عام أساسي</span>
                             }
                         </td>
-                        <td>@admin.Email</td>
+                        <td class="text-muted font-monospace">@admin.Email</td>
                         <td>
                             @if (admin.Role == AppRoles.SuperAdmin)
                             {
-                                <span class="badge bg-danger">@admin.Role</span>
+                                <span class="badge badge-subtle-danger">
+                                    <i class="bi bi-shield-fill text-danger me-1"></i>مشرف عام
+                                </span>
                             }
                             else
                             {
-                                <span class="badge bg-info text-dark">@admin.Role</span>
+                                <span class="badge badge-subtle-primary">
+                                    <i class="bi bi-person-gear text-primary me-1"></i>مشرف
+                                </span>
                             }
                         </td>
                         <td>
                             @if (admin.IsActive)
                             {
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge badge-subtle-success">نشط</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">Deactivated</span>
+                                <span class="badge badge-subtle-secondary">معطّل</span>
                             }
                         </td>
-                        <td>@admin.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="small text-muted">@admin.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
                         <td class="text-end">
                             @if (admin.IsPrimarySuperAdmin)
                             {
-                                <span class="text-muted small fst-italic">Protected Account</span>
+                                <span class="badge bg-light text-muted border">
+                                    <i class="bi bi-lock-fill me-1"></i>حساب محمي
+                                </span>
                             }
                             else
                             {
@@ -87,14 +99,14 @@
                                     <input type="hidden" name="id" value="@admin.Id" />
                                     @if (admin.IsActive)
                                     {
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Deactivate this Admin account? Active sessions will be revoked.');">
-                                            Deactivate
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" onclick="return confirm('تعطيل حساب المشرف هذا؟ سيتم إلغاء الجلسات النشطة.');">
+                                            <i class="bi bi-slash-circle me-1"></i>تعطيل
                                         </button>
                                     }
                                     else
                                     {
-                                        <button type="submit" class="btn btn-sm btn-outline-success">
-                                            Activate
+                                        <button type="submit" class="btn btn-sm btn-outline-success py-1 px-2">
+                                            <i class="bi bi-check-circle me-1"></i>تفعيل
                                         </button>
                                     }
                                 </form>

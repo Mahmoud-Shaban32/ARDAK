@@ -1,25 +1,42 @@
 @model UpdateCustomerDto
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = $"Edit Customer - {Model.FullName}";
+    ViewData["Title"] = $"تعديل بيانات العميل - {Model.FullName}";
 }
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">العملاء</a></li>
+        <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none">@Model.FullName</a></li>
+        <li class="breadcrumb-item active text-muted">تعديل</li>
+    </ol>
+</nav>
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold mb-0">Edit Customer Record</h3>
-                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">Cancel</a>
+            <div class="card-header bg-white py-3 fw-bold d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square text-primary fs-5"></i>
+                    <span>تعديل سجل العميل: @Model.FullName</span>
                 </div>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-eye"></i> التفاصيل
+                </a>
+            </div>
+            <div class="card-body p-4">
                 <p class="text-muted small mb-4">
-                    Update customer details. Changes to status will immediately synchronize portal account activity.
+                    تحديث بيانات العميل. تغيير الحالة يؤثر مباشرة على تفعيل أو إيقاف صلاحية دخول بوابة المستفيدين.
                 </p>
 
                 @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
                 {
-                    <div class="alert alert-danger" role="alert">
-                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <div>
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
                     </div>
                 }
 
@@ -29,56 +46,59 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <label asp-for="FullName" class="form-label fw-bold small text-muted">الاسم الكامل <span class="text-danger">*</span></label>
                             <input asp-for="FullName" class="form-control" />
-                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                            <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            <label asp-for="PhoneNumber" class="form-label fw-bold small text-muted">رقم الهاتف <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control font-monospace" dir="ltr" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <label asp-for="Email" class="form-label fw-bold small text-muted">البريد الإلكتروني</label>
+                            <input asp-for="Email" class="form-control" dir="ltr" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="NationalIdOrTaxNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="NationalIdOrTaxNumber" class="form-control" />
-                            <span asp-validation-for="NationalIdOrTaxNumber" class="text-danger small"></span>
+                            <label asp-for="NationalIdOrTaxNumber" class="form-label fw-bold small text-muted">الهوية الوطنية / السجل التجاري / الرقم الضريبي</label>
+                            <input asp-for="NationalIdOrTaxNumber" class="form-control font-monospace" dir="ltr" />
+                            <span asp-validation-for="NationalIdOrTaxNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-8 mb-3">
-                            <label asp-for="Address" class="form-label fw-semibold"></label>
+                            <label asp-for="Address" class="form-label fw-bold small text-muted">العنوان</label>
                             <input asp-for="Address" class="form-control" />
-                            <span asp-validation-for="Address" class="text-danger small"></span>
+                            <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <label asp-for="Status" class="form-label fw-bold small text-muted">الحالة</label>
                             <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<CustomerStatus>()"></select>
-                            <span asp-validation-for="Status" class="text-danger small"></span>
+                            <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex align-items-center mb-1">
-                            <label asp-for="InternalNotes" class="form-label fw-semibold mb-0"></label>
-                            <span class="badge bg-warning text-dark ms-2">Staff Only &bull; Confidential</span>
+                            <label asp-for="InternalNotes" class="form-label fw-bold small text-muted mb-0">ملاحظات داخلية لفريق العمل</label>
+                            <span class="badge badge-subtle-danger ms-2">سري للغاية &bull; خاص بالموظفين</span>
                         </div>
                         <textarea asp-for="InternalNotes" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="InternalNotes" class="text-danger small"></span>
-                        <div class="form-text">This information is strictly confidential and will never be shown on the customer portal.</div>
+                        <span asp-validation-for="InternalNotes" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-text text-muted">هذه المعلومات مخصصة لموظفي النظام فقط ولا تظهر للمستفيد نهائياً.</div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Details</a>
-                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary px-4 rounded-pill">إلغاء</a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow">
+                            <i class="bi bi-check2-circle"></i>
+                            <span>حفظ التعديلات</span>
+                        </button>
                     </div>
                 </form>
             </div>

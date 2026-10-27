@@ -1,152 +1,187 @@
 @model CreatePropertyDto
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = "Register Property Record";
+    ViewData["Title"] = "تسجيل عقار جديد";
     var customers = ViewBag.Customers as SelectList;
 }
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">العقارات</a></li>
+        <li class="breadcrumb-item active text-muted">تسجيل عقار جديد</li>
+    </ol>
+</nav>
 
 <div class="row justify-content-center">
     <div class="col-lg-9">
         <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold mb-0">Register Property Record</h3>
-                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to Inventory</a>
+            <div class="card-header bg-white py-3 fw-bold d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building-add text-success fs-5"></i>
+                    <span>تسجيل عقار جديد في منصة أرضك</span>
                 </div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-right"></i> القائمة
+                </a>
+            </div>
+            <div class="card-body p-4">
                 <p class="text-muted small mb-4">
-                    Register an internal Land or Villa property profile. Reference numbers must be unique across the portfolio.
+                    إدخال بيانات عقار جديد (أرض أو فيلا). يجب أن يكون الرقم المرجعي فريداً عبر كامل المنظومة.
                 </p>
 
                 @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(string.Empty))
                 {
-                    <div class="alert alert-danger" role="alert">
-                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <div>
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
                     </div>
                 }
 
                 <form asp-action="Create" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div class="card mb-4 bg-light border-0">
+                    <!-- 1. التعريف والبيانات الأساسية -->
+                    <div class="card mb-4 border-0 bg-light">
                         <div class="card-body p-3">
-                            <h6 class="fw-bold text-primary mb-3">1. Identification & Basic Profile</h6>
+                            <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-1-circle-fill"></i>
+                                <span>بيانات العقار والتعريف الأساسي</span>
+                            </h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="ReferenceNumber" class="form-label fw-semibold"></label>
-                                    <input asp-for="ReferenceNumber" class="form-control" placeholder="PRP-2026-0001" autofocus />
-                                    <span asp-validation-for="ReferenceNumber" class="text-danger small"></span>
+                                    <label asp-for="ReferenceNumber" class="form-label fw-bold small text-muted">الرقم المرجعي <span class="text-danger">*</span></label>
+                                    <input asp-for="ReferenceNumber" class="form-control font-monospace" placeholder="مثال: PRP-2026-0001" autofocus />
+                                    <span asp-validation-for="ReferenceNumber" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="Type" class="form-label fw-semibold"></label>
+                                    <label asp-for="Type" class="form-label fw-bold small text-muted">نوع العقار <span class="text-danger">*</span></label>
                                     <select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<PropertyType>()"></select>
-                                    <span asp-validation-for="Type" class="text-danger small"></span>
+                                    <span asp-validation-for="Type" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="PrimaryCustomerId" class="form-label fw-semibold"></label>
+                                    <label asp-for="PrimaryCustomerId" class="form-label fw-bold small text-muted">المالك / العميل الأساسي <span class="text-danger">*</span></label>
                                     <select asp-for="PrimaryCustomerId" class="form-select" asp-items="customers">
-                                        <option value="">-- Select Primary Client --</option>
+                                        <option value="">-- اختر العميل الأساسي --</option>
                                     </select>
-                                    <span asp-validation-for="PrimaryCustomerId" class="text-danger small"></span>
+                                    <span asp-validation-for="PrimaryCustomerId" class="text-danger small mt-1 d-block"></span>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label asp-for="Title" class="form-label fw-semibold"></label>
-                                <input asp-for="Title" class="form-control" placeholder="e.g. Al-Malqa Commercial Land Plot #42" />
-                                <span asp-validation-for="Title" class="text-danger small"></span>
+                                <label asp-for="Title" class="form-label fw-bold small text-muted">عنوان / اسم العقار <span class="text-danger">*</span></label>
+                                <input asp-for="Title" class="form-control" placeholder="مثال: أرض تجارية حي الملقا قطعة رقم 42" />
+                                <span asp-validation-for="Title" class="text-danger small mt-1 d-block"></span>
                             </div>
 
                             <div class="mb-0">
-                                <label asp-for="Description" class="form-label fw-semibold"></label>
-                                <textarea asp-for="Description" class="form-control" rows="2" placeholder="Brief descriptive notes regarding topography, orientation, or attributes..."></textarea>
-                                <span asp-validation-for="Description" class="text-danger small"></span>
+                                <label asp-for="Description" class="form-label fw-bold small text-muted">وصف تفصيلي للعقار</label>
+                                <textarea asp-for="Description" class="form-control" rows="2" placeholder="وصف تضاريس الأرض، واجهاتها، أطوال الشوارع، المميزات..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4 bg-light border-0">
+                    <!-- 2. تفاصيل الموقع -->
+                    <div class="card mb-4 border-0 bg-light">
                         <div class="card-body p-3">
-                            <h6 class="fw-bold text-primary mb-3">2. Location Details</h6>
+                            <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-2-circle-fill"></i>
+                                <span>تفاصيل الموقع الجغرافي</span>
+                            </h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="Governorate" class="form-label fw-semibold"></label>
-                                    <input asp-for="Governorate" class="form-control" placeholder="Riyadh Province" />
-                                    <span asp-validation-for="Governorate" class="text-danger small"></span>
+                                    <label asp-for="Governorate" class="form-label fw-bold small text-muted">المنطقة / المحافظة</label>
+                                    <input asp-for="Governorate" class="form-control" placeholder="منطقة الرياض" />
+                                    <span asp-validation-for="Governorate" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="City" class="form-label fw-semibold"></label>
-                                    <input asp-for="City" class="form-control" placeholder="Riyadh" />
-                                    <span asp-validation-for="City" class="text-danger small"></span>
+                                    <label asp-for="City" class="form-label fw-bold small text-muted">المدينة <span class="text-danger">*</span></label>
+                                    <input asp-for="City" class="form-control" placeholder="الرياض" />
+                                    <span asp-validation-for="City" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="DistrictOrArea" class="form-label fw-semibold"></label>
-                                    <input asp-for="DistrictOrArea" class="form-control" placeholder="Al-Malqa" />
-                                    <span asp-validation-for="DistrictOrArea" class="text-danger small"></span>
+                                    <label asp-for="DistrictOrArea" class="form-label fw-bold small text-muted">الحي / المنطقة <span class="text-danger">*</span></label>
+                                    <input asp-for="DistrictOrArea" class="form-control" placeholder="حي الملقا" />
+                                    <span asp-validation-for="DistrictOrArea" class="text-danger small mt-1 d-block"></span>
                                 </div>
                             </div>
                             <div class="mb-0">
-                                <label asp-for="AddressDetails" class="form-label fw-semibold"></label>
-                                <input asp-for="AddressDetails" class="form-control" placeholder="Block 14, Plot 42, Western Avenue" />
-                                <span asp-validation-for="AddressDetails" class="text-danger small"></span>
+                                <label asp-for="AddressDetails" class="form-label fw-bold small text-muted">تفاصيل العنوان والشارع</label>
+                                <input asp-for="AddressDetails" class="form-control" placeholder="مخطط 14، قطعة 42، شارع الأمير تركي" />
+                                <span asp-validation-for="AddressDetails" class="text-danger small mt-1 d-block"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4 bg-light border-0">
+                    <!-- 3. المساحة والصك والإحداثيات -->
+                    <div class="card mb-4 border-0 bg-light">
                         <div class="card-body p-3">
-                            <h6 class="fw-bold text-primary mb-3">3. Measurements, Coordinates & Deed Info</h6>
+                            <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-3-circle-fill"></i>
+                                <span>المساحة، الصك، والإحداثيات</span>
+                            </h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label asp-for="AreaMeasurement" class="form-label fw-semibold"></label>
-                                    <input asp-for="AreaMeasurement" class="form-control" type="number" step="0.01" placeholder="850.00" />
-                                    <span asp-validation-for="AreaMeasurement" class="text-danger small"></span>
+                                    <label asp-for="AreaMeasurement" class="form-label fw-bold small text-muted">المساحة <span class="text-danger">*</span></label>
+                                    <input asp-for="AreaMeasurement" class="form-control font-monospace" type="number" step="0.01" placeholder="850.00" />
+                                    <span asp-validation-for="AreaMeasurement" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-2 mb-3">
-                                    <label asp-for="AreaUnit" class="form-label fw-semibold"></label>
-                                    <input asp-for="AreaUnit" class="form-control" value="sqm" />
-                                    <span asp-validation-for="AreaUnit" class="text-danger small"></span>
+                                    <label asp-for="AreaUnit" class="form-label fw-bold small text-muted">الوحدة</label>
+                                    <input asp-for="AreaUnit" class="form-control" value="متر مربع" />
+                                    <span asp-validation-for="AreaUnit" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label asp-for="Latitude" class="form-label fw-semibold"></label>
-                                    <input asp-for="Latitude" class="form-control" type="number" step="any" placeholder="24.713552" />
-                                    <span asp-validation-for="Latitude" class="text-danger small"></span>
+                                    <label asp-for="Latitude" class="form-label fw-bold small text-muted">خط العرض (Latitude)</label>
+                                    <input asp-for="Latitude" class="form-control font-monospace" type="number" step="any" placeholder="24.713552" dir="ltr" />
+                                    <span asp-validation-for="Latitude" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label asp-for="Longitude" class="form-label fw-semibold"></label>
-                                    <input asp-for="Longitude" class="form-control" type="number" step="any" placeholder="46.675296" />
-                                    <span asp-validation-for="Longitude" class="text-danger small"></span>
+                                    <label asp-for="Longitude" class="form-label fw-bold small text-muted">خط الطول (Longitude)</label>
+                                    <input asp-for="Longitude" class="form-control font-monospace" type="number" step="any" placeholder="46.675296" dir="ltr" />
+                                    <span asp-validation-for="Longitude" class="text-danger small mt-1 d-block"></span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-0">
-                                    <label asp-for="OwnershipType" class="form-label fw-semibold"></label>
-                                    <input asp-for="OwnershipType" class="form-control" placeholder="Freehold Title" />
-                                    <span asp-validation-for="OwnershipType" class="text-danger small"></span>
+                                    <label asp-for="OwnershipType" class="form-label fw-bold small text-muted">نوع الملكية</label>
+                                    <input asp-for="OwnershipType" class="form-control" placeholder="صك ملكية إلكتروني مطلق" />
+                                    <span asp-validation-for="OwnershipType" class="text-danger small mt-1 d-block"></span>
                                 </div>
                                 <div class="col-md-6 mb-0">
-                                    <label asp-for="DeedOrTitleNumber" class="form-label fw-semibold"></label>
-                                    <input asp-for="DeedOrTitleNumber" class="form-control" placeholder="Sukuk # 310123456789" />
-                                    <span asp-validation-for="DeedOrTitleNumber" class="text-danger small"></span>
+                                    <label asp-for="DeedOrTitleNumber" class="form-label fw-bold small text-muted">رقم الصك / الوثيقة</label>
+                                    <input asp-for="DeedOrTitleNumber" class="form-control font-monospace" placeholder="310123456789" dir="ltr" />
+                                    <span asp-validation-for="DeedOrTitleNumber" class="text-danger small mt-1 d-block"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4 bg-light border-0">
+                    <!-- 4. ملاحظات داخلية سرية -->
+                    <div class="card mb-4 border-0 bg-light">
                         <div class="card-body p-3">
                             <div class="d-flex align-items-center mb-2">
-                                <h6 class="fw-bold text-primary mb-0">4. Internal Staff Notes</h6>
-                                <span class="badge bg-warning text-dark ms-2">Confidential &bull; Staff Only</span>
+                                <h6 class="fw-bold text-danger mb-0 d-flex align-items-center gap-2">
+                                    <i class="bi bi-shield-lock-fill"></i>
+                                    <span>ملاحظات داخلية لفريق العمل</span>
+                                </h6>
+                                <span class="badge badge-subtle-danger ms-2">سري للغاية &bull; خاص بالموظفين</span>
                             </div>
-                            <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="Enter strictly private observations, internal valuations, or notes..."></textarea>
-                            <span asp-validation-for="InternalNotes" class="text-danger small"></span>
-                            <div class="form-text">These notes will never be published or visible on the customer portal.</div>
+                            <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="ملاحظات سرية، تقييمات داخلية للعقار، شروط خاصة..."></textarea>
+                            <span asp-validation-for="InternalNotes" class="text-danger small mt-1 d-block"></span>
+                            <div class="form-text text-muted">هذه الملاحظات مخصصة لموظفي النظام فقط ولا تظهر في بوابة العميل نهائياً.</div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center pt-2">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-4">Register Property Record</button>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">إلغاء</a>
+                        <button type="submit" class="btn btn-success px-4 rounded-pill shadow">
+                            <i class="bi bi-check2-circle"></i>
+                            <span>تسجيل العقار</span>
+                        </button>
                     </div>
                 </form>
             </div>

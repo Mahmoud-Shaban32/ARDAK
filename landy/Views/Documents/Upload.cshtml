@@ -1,123 +1,141 @@
 @model Ardak.Application.DTOs.UploadDocumentDto
 @{
-    ViewData["Title"] = "Upload Document";
+    ViewData["Title"] = "رفع مستند جديد";
 }
 
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">Documents</a></li>
-        <li class="breadcrumb-item active">Upload</li>
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">المستندات</a></li>
+        <li class="breadcrumb-item active text-muted">رفع مستند</li>
     </ol>
 </nav>
 
 <div class="row justify-content-center">
     <div class="col-lg-9">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white fw-semibold">
-                <i class="bi bi-cloud-arrow-up me-2"></i>Upload Secure Document
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 fw-bold d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-cloud-arrow-up text-primary fs-5"></i>
+                    <span>رفع وأرشفة مستند إلكتروني في منصة أرضك</span>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-right"></i> القائمة
+                </a>
             </div>
             <div class="card-body p-4">
                 <form asp-action="Upload" method="post" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm" role="alert"></div>
 
-                    {{!-- File Picker Card --}}
-                    <div class="mb-4 p-3 bg-light border rounded">
-                        <label class="form-label fw-bold">Document File <span class="text-danger">*</span></label>
+                    <!-- صندوق اختيار الملف -->
+                    <div class="mb-4 p-3 bg-light border rounded-3">
+                        <label class="form-label fw-bold text-dark">الملف المرفق <span class="text-danger">*</span></label>
                         <input type="file" name="file" class="form-control" required />
-                        <div class="form-text mt-1 text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Allowed formats: <strong>PDF, PNG, JPG/JPEG, DOC/DOCX, XLS/XLSX, TIF/TIFF, TXT, CSV</strong>. Max size: <strong>25 MB</strong>.
-                            Files are stored in a private directory with server-side authorization.
+                        <div class="form-text mt-2 text-muted">
+                            <i class="bi bi-info-circle me-1 text-primary"></i>
+                            الصيغ المدعومة: <strong>PDF, PNG, JPG/JPEG, DOC/DOCX, XLS/XLSX, TIF/TIFF, TXT, CSV</strong>. الحجم الأقصى: <strong>25 ميجابايت</strong>.
+                            يتم تخزين الملفات بشكل مشفّر مع تدقيق أمني عالي.
                         </div>
                     </div>
 
-                    <h5 class="border-bottom pb-2 mb-3">Document Details</h5>
+                    <h6 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-1-circle-fill"></i>
+                        <span>بيانات وتصنيف المستند</span>
+                    </h6>
 
                     <div class="row g-3">
                         <div class="col-md-8">
-                            <label asp-for="Title" class="form-label fw-semibold"></label>
-                            <input asp-for="Title" class="form-control" placeholder="e.g. Official Deed Survey Copy" />
-                            <span asp-validation-for="Title" class="text-danger small"></span>
+                            <label asp-for="Title" class="form-label fw-bold small text-muted">عنوان المستند <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="مثال: صورة الصك الإلكتروني المعتمد" />
+                            <span asp-validation-for="Title" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-4">
-                            <label asp-for="ReferenceNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="ReferenceNumber" class="form-control" placeholder="e.g. DEED-2026-99" />
-                            <span asp-validation-for="ReferenceNumber" class="text-danger small"></span>
+                            <label asp-for="ReferenceNumber" class="form-label fw-bold small text-muted">رقم المرجع (اختياري)</label>
+                            <input asp-for="ReferenceNumber" class="form-control font-monospace" placeholder="DEED-2026-99" dir="ltr" />
+                            <span asp-validation-for="ReferenceNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="Type" class="form-label fw-semibold"></label>
+                            <label asp-for="Type" class="form-label fw-bold small text-muted">نوع المستند <span class="text-danger">*</span></label>
                             <select asp-for="Type" asp-items="@ViewBag.DocumentTypes" class="form-select"></select>
-                            <span asp-validation-for="Type" class="text-danger small"></span>
+                            <span asp-validation-for="Type" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="TypeLabel" class="form-label fw-semibold"></label>
-                            <input asp-for="TypeLabel" class="form-control" placeholder="Optional custom label if 'Other'" />
-                            <span asp-validation-for="TypeLabel" class="text-danger small"></span>
+                            <label asp-for="TypeLabel" class="form-label fw-bold small text-muted">مسمى مخصص (في حال اختيار أخرى)</label>
+                            <input asp-for="TypeLabel" class="form-control" />
+                            <span asp-validation-for="TypeLabel" class="text-danger small mt-1 d-block"></span>
                         </div>
 
                         <div class="col-12">
-                            <label asp-for="Description" class="form-label fw-semibold"></label>
-                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="Brief summary of document content..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger small"></span>
+                            <label asp-for="Description" class="form-label fw-bold small text-muted">نبذة وملاحظات عن محتوى المستند</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="وصف محتويات المستند..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
-                    <h5 class="border-bottom pb-2 mt-4 mb-3">Entity Association (Optional)</h5>
+                    <h6 class="fw-bold text-primary mt-4 mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-2-circle-fill"></i>
+                        <span>الربط بالكيانات (اختياري)</span>
+                    </h6>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label asp-for="CustomerId" class="form-label fw-semibold"></label>
+                            <label asp-for="CustomerId" class="form-label fw-bold small text-muted">الربط بعميل</label>
                             <select asp-for="CustomerId" asp-items="@ViewBag.Customers" class="form-select">
-                                <option value="">-- No Customer Link --</option>
+                                <option value="">-- بدون ارتباط بعميل --</option>
                             </select>
-                            <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                            <span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-4">
-                            <label asp-for="PropertyId" class="form-label fw-semibold"></label>
+                            <label asp-for="PropertyId" class="form-label fw-bold small text-muted">الربط بعقار</label>
                             <select asp-for="PropertyId" asp-items="@ViewBag.Properties" class="form-select">
-                                <option value="">-- No Property Link --</option>
+                                <option value="">-- بدون ارتباط بعقار --</option>
                             </select>
-                            <span asp-validation-for="PropertyId" class="text-danger small"></span>
+                            <span asp-validation-for="PropertyId" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-4">
-                            <label asp-for="ProcedureId" class="form-label fw-semibold"></label>
+                            <label asp-for="ProcedureId" class="form-label fw-bold small text-muted">الربط بمعاملة</label>
                             <select asp-for="ProcedureId" asp-items="@ViewBag.Procedures" class="form-select">
-                                <option value="">-- No Procedure Link --</option>
+                                <option value="">-- بدون ارتباط بمعاملة --</option>
                             </select>
-                            <span asp-validation-for="ProcedureId" class="text-danger small"></span>
+                            <span asp-validation-for="ProcedureId" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
-                    <h5 class="border-bottom pb-2 mt-4 mb-3">Privacy & Classification</h5>
+                    <h6 class="fw-bold text-primary mt-4 mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-3-circle-fill"></i>
+                        <span>السرية وصلاحيات المشاهدة</span>
+                    </h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label asp-for="ConfidentialityLevel" class="form-label fw-semibold"></label>
+                            <label asp-for="ConfidentialityLevel" class="form-label fw-bold small text-muted">مستوى السرية <span class="text-danger">*</span></label>
                             <select asp-for="ConfidentialityLevel" asp-items="@ViewBag.ConfidentialityLevels" class="form-select"></select>
-                            <span asp-validation-for="ConfidentialityLevel" class="text-danger small"></span>
+                            <span asp-validation-for="ConfidentialityLevel" class="text-danger small mt-1 d-block"></span>
                         </div>
-                        <div class="col-md-6 d-flex align-items-center mt-4">
-                            <div class="form-check p-3 border rounded bg-warning-subtle border-warning w-100">
-                                <input asp-for="IsCustomerVisible" class="form-check-input ms-1" type="checkbox" id="chkCustomerVisible" />
-                                <label class="form-check-label fw-semibold ms-2" for="chkCustomerVisible">
-                                    Allow Customer Portal Access
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch p-3 border rounded-3 bg-light w-100">
+                                <input asp-for="IsCustomerVisible" class="form-check-input" type="checkbox" id="chkCustomerVisible" />
+                                <label class="form-check-label fw-bold ms-2" for="chkCustomerVisible">
+                                    السماح للعميل بمشاهدة وتحميل المستند في بوابته
                                 </label>
-                                <div class="small text-muted ms-2 mt-1">
-                                    All documents are strictly private by default. Only check this if the customer is authorized and approved to view this document.
+                                <div class="small text-muted mt-1">
+                                    المستندات خاصة بشكل افتراضي. فعّل هذا الخيار فقط عندما يكون مصرحاً للمستفيد الوصول إليه.
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <label asp-for="InternalNotes" class="form-label fw-semibold"></label>
-                            <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="Confidential staff notes. Never visible to customers."></textarea>
-                            <span asp-validation-for="InternalNotes" class="text-danger small"></span>
+                            <label asp-for="InternalNotes" class="form-label fw-bold small text-muted">ملاحظات سرية للموظفين</label>
+                            <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="ملاحظات سرية خاصة بفريق العمل &mdash; لا تظهر للمستفيد نهائياً."></textarea>
+                            <span asp-validation-for="InternalNotes" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="bi bi-cloud-arrow-up me-1"></i> Upload Document
+                    <div class="d-flex justify-content-between align-items-center gap-2 mt-4 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">إلغاء</a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow">
+                            <i class="bi bi-cloud-arrow-up me-1"></i>
+                            <span>رفع المستند</span>
                         </button>
                     </div>
                 </form>
