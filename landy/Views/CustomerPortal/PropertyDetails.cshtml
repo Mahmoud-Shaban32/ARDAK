@@ -13,130 +13,176 @@
     </ol>
 </nav>
 
-<!-- Page Header -->
-<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <h1 class="h3 fw-bold mb-0">
-                <i class="bi bi-building text-primary me-2"></i>@Model.Title
-            </h1>
-            <span class="badge bg-secondary-subtle text-secondary border">@Model.Status</span>
+<!-- ══ PROPERTY HERO ════════════════════════════════════════ -->
+<div class="property-hero fade-in mb-4">
+    <div class="d-flex align-items-start gap-4 flex-wrap" style="position:relative;z-index:1;">
+        <div class="property-hero-icon">
+            <i class="@(Model.Type == PropertyType.Land ? "bi bi-geo" : "bi bi-house-door")"></i>
         </div>
-        <p class="text-muted mb-0 small">
-            الرقم المرجعي: <code class="bg-light px-2 py-1 rounded">@Model.ReferenceNumber</code> &bull; النوع: <strong class="text-dark">@Model.Type</strong>
-        </p>
-    </div>
-    <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6">
-            <i class="bi bi-person-check me-1"></i>
-            @Model.OwnershipRole
-            @if (Model.OwnershipPercentage.HasValue)
-            {
-                <span dir="ltr">(@Model.OwnershipPercentage.Value.ToString("0.##")%)</span>
-            }
-        </span>
-        <a asp-action="Properties" class="btn btn-outline-secondary rounded-pill">
-            <i class="bi bi-arrow-right"></i>
-            <span>العودة لعقاراتي</span>
-        </a>
+        <div class="flex-grow-1">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="badge" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.22);">
+                    @(Model.Type == PropertyType.Land ? "أرض" : "فيلا")
+                </span>
+                <span class="badge badge-subtle-secondary">@Model.Status</span>
+            </div>
+            <h1 class="property-hero-title">@Model.Title</h1>
+            <p class="property-hero-sub mb-3">
+                <i class="bi bi-hash me-1"></i>@Model.ReferenceNumber
+                &bull;
+                <i class="bi bi-geo-alt me-1"></i>@Model.DistrictOrArea، @Model.City
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="hero-stat-pill">
+                    <i class="bi bi-rulers"></i>
+                    @Model.AreaMeasurement.ToString("N2") @Model.AreaUnit
+                </span>
+                <span class="hero-stat-pill">
+                    <i class="bi bi-person-check"></i>
+                    @Model.OwnershipRole
+                    @if (Model.OwnershipPercentage.HasValue)
+                    {
+                        <span dir="ltr">(@Model.OwnershipPercentage.Value.ToString("0.##")%)</span>
+                    }
+                </span>
+                @if (!string.IsNullOrEmpty(Model.OwnershipType))
+                {
+                    <span class="hero-stat-pill">
+                        <i class="bi bi-file-earmark-check"></i>
+                        @Model.OwnershipType
+                    </span>
+                }
+            </div>
+        </div>
+        <div class="ms-auto d-none d-md-block">
+            <a asp-action="Properties" class="btn btn-sm rounded-pill px-3" style="background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.22);">
+                <i class="bi bi-arrow-right"></i>
+                <span>العودة لعقاراتي</span>
+            </a>
+        </div>
     </div>
 </div>
 
+<!-- Mobile back button -->
+<div class="d-md-none mb-3">
+    <a asp-action="Properties" class="btn btn-outline-secondary btn-sm rounded-pill">
+        <i class="bi bi-arrow-right"></i>
+        <span>العودة لعقاراتي</span>
+    </a>
+</div>
+
+<!-- ══ DETAILS GRID ══════════════════════════════════════════ -->
 <div class="row g-4">
-    <!-- 1. الموقع والمساحة -->
+
+    <!-- Location & Area -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-geo-alt text-primary fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-geo-alt text-primary"></i>
                 <span>بيانات الموقع والمساحة</span>
             </div>
-            <div class="card-body">
-                <dl class="row mb-0 g-2">
-                    <dt class="col-sm-4 text-muted small">المدينة / المنطقة</dt>
-                    <dd class="col-sm-8 fw-semibold text-dark">@Model.City، @Model.Governorate</dd>
-
-                    <dt class="col-sm-4 text-muted small">الحي / المخطط</dt>
-                    <dd class="col-sm-8">@Model.DistrictOrArea</dd>
-
-                    @if (!string.IsNullOrWhiteSpace(Model.AddressDetails))
-                    {
-                        <dt class="col-sm-4 text-muted small">تفاصيل العنوان</dt>
-                        <dd class="col-sm-8">@Model.AddressDetails</dd>
-                    }
-
-                    <dt class="col-sm-4 text-muted small">المساحة الإجمالية</dt>
-                    <dd class="col-sm-8 fw-bold text-primary font-monospace">@Model.AreaMeasurement.ToString("N2") @Model.AreaUnit</dd>
-
-                    @if (!string.IsNullOrWhiteSpace(Model.Description))
-                    {
-                        <dt class="col-sm-4 text-muted small">الوصف والملاحظات</dt>
-                        <dd class="col-sm-8 text-muted">@Model.Description</dd>
-                    }
-                </dl>
+            <div class="card-body p-4">
+                <div class="info-section-row">
+                    <span class="info-lbl">المدينة / المنطقة</span>
+                    <span class="info-val fw-600">@Model.City، @Model.Governorate</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الحي / المخطط</span>
+                    <span class="info-val">@Model.DistrictOrArea</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.AddressDetails))
+                {
+                    <div class="info-section-row">
+                        <span class="info-lbl">تفاصيل العنوان</span>
+                        <span class="info-val">@Model.AddressDetails</span>
+                    </div>
+                }
+                <div class="info-section-row">
+                    <span class="info-lbl">المساحة الإجمالية</span>
+                    <span class="info-val fw-700 text-primary font-monospace">@Model.AreaMeasurement.ToString("N2") @Model.AreaUnit</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="info-section-row">
+                        <span class="info-lbl">الوصف</span>
+                        <span class="info-val text-muted">@Model.Description</span>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
-    <!-- 2. الصك والملكية -->
+    <!-- Deed & Ownership -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-file-earmark-check text-success fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-check text-success"></i>
                 <span>بيانات الصك والملكية الرسمية</span>
             </div>
-            <div class="card-body">
-                <dl class="row mb-0 g-2">
-                    <dt class="col-sm-4 text-muted small">نوع الملكية</dt>
-                    <dd class="col-sm-8 fw-semibold">@(Model.OwnershipType ?? "ملكية كاملة")</dd>
-
-                    <dt class="col-sm-4 text-muted small">رقم الصك / الوثيقة</dt>
-                    <dd class="col-sm-8 font-monospace">
+            <div class="card-body p-4">
+                <div class="info-section-row">
+                    <span class="info-lbl">نوع الملكية</span>
+                    <span class="info-val fw-600">@(Model.OwnershipType ?? "ملكية كاملة")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">رقم الصك</span>
+                    <span class="info-val">
                         @if (!string.IsNullOrWhiteSpace(Model.DeedOrTitleNumber))
                         {
-                            <span class="badge bg-light text-dark border">@Model.DeedOrTitleNumber</span>
+                            <span class="badge bg-light text-dark border font-monospace">@Model.DeedOrTitleNumber</span>
                         }
                         else
                         {
                             <span class="text-muted">مقيد في السجل الرسمي</span>
                         }
-                    </dd>
-
-                    <dt class="col-sm-4 text-muted small">صفة العميل بالعقار</dt>
-                    <dd class="col-sm-8 fw-bold text-dark">@Model.OwnershipRole</dd>
-
-                    <dt class="col-sm-4 text-muted small">الحالة التشغيلية</dt>
-                    <dd class="col-sm-8"><span class="badge bg-secondary-subtle text-secondary border">@Model.Status</span></dd>
-                </dl>
+                    </span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">صفة العميل</span>
+                    <span class="info-val fw-700 text-dark">@Model.OwnershipRole</span>
+                </div>
+                @if (Model.OwnershipPercentage.HasValue)
+                {
+                    <div class="info-section-row">
+                        <span class="info-lbl">نسبة الملكية</span>
+                        <span class="info-val fw-700 text-primary" dir="ltr">@Model.OwnershipPercentage.Value.ToString("0.##")%</span>
+                    </div>
+                }
+                <div class="info-section-row">
+                    <span class="info-lbl">الحالة التشغيلية</span>
+                    <span class="info-val"><span class="badge-subtle-secondary badge">@Model.Status</span></span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. المعاملات والإجراءات المعتمدة -->
+    <!-- Approved Procedures -->
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2 fw-bold">
-                    <i class="bi bi-clipboard2-check text-info fs-5"></i>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2 fw-700">
+                    <i class="bi bi-clipboard2-check text-info"></i>
                     <span>المعاملات والإجراءات القانونية المعتمدة</span>
                 </div>
-                <span class="badge bg-light text-muted border">@Model.ApprovedProcedures.Count معاملة مسجلة</span>
+                <span class="badge-subtle-info badge">@Model.ApprovedProcedures.Count معاملة</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.ApprovedProcedures.Any())
                 {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-clipboard-x fs-2 d-block mb-1 text-secondary"></i>
-                        لا توجد معاملات منشورة حالياً لهذا العقار.
+                    <div class="empty-state">
+                        <i class="bi bi-clipboard-x"></i>
+                        <h6>لا توجد معاملات معتمدة</h6>
+                        <p>لا توجد معاملات منشورة حالياً لهذا العقار.</p>
                     </div>
                 }
                 else
                 {
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>نوع المعاملة</th>
-                                    <th>رقم الطلب / القيد</th>
+                                    <th>رقم الطلب</th>
                                     <th>الجهة المختصة</th>
                                     <th>الحالة</th>
                                     <th>آخر تحديث</th>
@@ -147,26 +193,24 @@
                                 @foreach (var pr in Model.ApprovedProcedures)
                                 {
                                     <tr>
-                                        <td>
-                                            <span class="badge bg-light text-dark border fw-bold">@pr.TypeLabel</span>
-                                        </td>
-                                        <td class="font-monospace">@(pr.ApplicationNumber ?? "—")</td>
+                                        <td><span class="badge bg-light text-dark border fw-700">@pr.TypeLabel</span></td>
+                                        <td class="font-monospace small">@(pr.ApplicationNumber ?? "—")</td>
                                         <td>@(pr.ResponsibleAuthority ?? "—")</td>
                                         <td><partial name="_ProcedureStatusBadge" model="pr.Status" /></td>
-                                        <td>
+                                        <td class="small">
                                             @if (!string.IsNullOrWhiteSpace(pr.CustomerUpdateNotes))
                                             {
-                                                <span class="text-dark small">@pr.CustomerUpdateNotes</span>
+                                                <span class="text-dark">@pr.CustomerUpdateNotes</span>
                                             }
                                             else
                                             {
-                                                <span class="text-muted small">المعاملة قيد المتابعة الاعتيادية</span>
+                                                <span class="text-muted">المعاملة قيد المتابعة</span>
                                             }
                                         </td>
                                         <td class="text-end">
-                                            <a asp-action="ProcedureDetails" asp-route-id="@pr.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <a asp-action="ProcedureDetails" asp-route-id="@pr.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">
                                                 <span>عرض</span>
-                                                <i class="bi bi-arrow-left ms-1"></i>
+                                                <i class="bi bi-arrow-left"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -179,33 +223,34 @@
         </div>
     </div>
 
-    <!-- 4. المستندات الرسمية المعتمدة -->
+    <!-- Approved Documents -->
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2 fw-bold">
-                    <i class="bi bi-file-earmark-arrow-down text-success fs-5"></i>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2 fw-700">
+                    <i class="bi bi-file-earmark-arrow-down text-success"></i>
                     <span>المستندات المعتمدة للعقار</span>
                 </div>
-                <span class="badge bg-light text-muted border">@Model.ApprovedDocuments.Count مستند</span>
+                <span class="badge-subtle-success badge">@Model.ApprovedDocuments.Count مستند</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.ApprovedDocuments.Any())
                 {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-folder-check fs-2 d-block mb-1 text-secondary"></i>
-                        لا توجد مستندات معتمدة متاحة للعرض حالياً لهذا العقار.
+                    <div class="empty-state">
+                        <i class="bi bi-folder-check"></i>
+                        <h6>لا توجد مستندات متاحة</h6>
+                        <p>لا توجد مستندات معتمدة متاحة للعرض حالياً لهذا العقار.</p>
                     </div>
                 }
                 else
                 {
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>عنوان المستند</th>
                                     <th>التصنيف</th>
-                                    <th>الملف الأصلي</th>
+                                    <th>الملف</th>
                                     <th>الحجم</th>
                                     <th>تاريخ الرفع</th>
                                     <th class="text-end">تحميل</th>
@@ -215,17 +260,17 @@
                                 @foreach (var doc in Model.ApprovedDocuments)
                                 {
                                     <tr>
-                                        <td class="fw-bold">
+                                        <td class="fw-700">
                                             <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
                                             @doc.Title
                                         </td>
                                         <td><span class="badge bg-light text-dark border">@doc.DocumentType</span></td>
                                         <td><code class="small">@doc.OriginalFileName</code></td>
                                         <td class="small text-muted font-monospace">@doc.FormattedFileSize</td>
-                                        <td class="small text-muted">@doc.UploadDateUtc.ToString("dd MMMM yyyy")</td>
+                                        <td class="small text-muted">@doc.UploadDateUtc.ToString("dd MMM yyyy")</td>
                                         <td class="text-end">
-                                            <a asp-action="DownloadDocument" asp-route-id="@doc.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                                <i class="bi bi-download me-1"></i>
+                                            <a asp-action="DownloadDocument" asp-route-id="@doc.Id" class="btn btn-sm btn-success rounded-pill px-3 py-1">
+                                                <i class="bi bi-download"></i>
                                                 <span>تحميل</span>
                                             </a>
                                         </td>

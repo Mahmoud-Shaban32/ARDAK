@@ -14,17 +14,17 @@
 </nav>
 
 <!-- Page Header -->
-<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3 fade-in">
     <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <h1 class="h3 fw-bold mb-0">
+        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <h1 class="h3 fw-800 mb-0">
                 <i class="bi bi-file-earmark-check text-primary me-2"></i>@Model.TypeLabel
             </h1>
             <partial name="_ProcedureStatusBadge" model="Model.Status" />
         </div>
         <p class="text-muted mb-0 small">
             العقار المرتبط:
-            <a asp-action="PropertyDetails" asp-route-id="@Model.PropertyId" class="text-decoration-none fw-semibold">
+            <a asp-action="PropertyDetails" asp-route-id="@Model.PropertyId" class="text-decoration-none fw-600 text-primary">
                 @Model.PropertyReferenceNumber &ndash; @Model.PropertyTitle
             </a>
         </p>
@@ -38,55 +38,61 @@
 <div class="row g-4">
     <!-- بيانات وحالة المعاملة الرسمية -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-info-circle text-primary fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle text-primary"></i>
                 <span>بيانات المعاملة الرسمية</span>
             </div>
-            <div class="card-body">
-                <dl class="row mb-0 g-2">
-                    <dt class="col-sm-5 text-muted small">نوع المعاملة</dt>
-                    <dd class="col-sm-7 fw-bold text-dark">@Model.TypeLabel</dd>
-
-                    <dt class="col-sm-5 text-muted small">رقم المعاملة / القيد</dt>
-                    <dd class="col-sm-7 font-monospace">@(Model.ApplicationNumber ?? "—")</dd>
-
-                    <dt class="col-sm-5 text-muted small">الجهة المسؤولة</dt>
-                    <dd class="col-sm-7 fw-semibold">@(Model.ResponsibleAuthority ?? "الجهة الرسمية المختصة")</dd>
-
-                    <dt class="col-sm-5 text-muted small">الحالة الراهنة</dt>
-                    <dd class="col-sm-7"><partial name="_ProcedureStatusBadge" model="Model.Status" /></dd>
-
-                    <dt class="col-sm-5 text-muted small">تاريخ التقديم</dt>
-                    <dd class="col-sm-7">@(Model.SubmissionDate.HasValue ? Model.SubmissionDate.Value.ToString("dd MMMM yyyy") : "—")</dd>
-
-                    <dt class="col-sm-5 text-muted small">تاريخ الإدراج في النظام</dt>
-                    <dd class="col-sm-7 text-muted">@Model.CreatedAtUtc.ToString("dd MMMM yyyy")</dd>
-                </dl>
+            <div class="card-body p-4">
+                <div class="info-section-row">
+                    <span class="info-lbl">نوع المعاملة</span>
+                    <span class="info-val fw-700 text-dark">@Model.TypeLabel</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">رقم المعاملة / القيد</span>
+                    <span class="info-val font-monospace">@(Model.ApplicationNumber ?? "—")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الجهة المسؤولة</span>
+                    <span class="info-val fw-600">@(Model.ResponsibleAuthority ?? "الجهة الرسمية المختصة")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الحالة الراهنة</span>
+                    <span class="info-val"><partial name="_ProcedureStatusBadge" model="Model.Status" /></span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">تاريخ التقديم</span>
+                    <span class="info-val">@(Model.SubmissionDate.HasValue ? Model.SubmissionDate.Value.ToString("dd MMMM yyyy") : "—")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">تاريخ التسجيل</span>
+                    <span class="info-val text-muted">@Model.CreatedAtUtc.ToString("dd MMMM yyyy")</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- آخر التحديثات والملاحظات الموجهة للعميل -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-chat-left-text text-info fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-chat-left-text text-info"></i>
                 <span>آخر مستجدات وتحديثات المعاملة</span>
             </div>
-            <div class="card-body d-flex flex-column justify-content-center">
+            <div class="card-body p-4 d-flex flex-column justify-content-center">
                 @if (!string.IsNullOrWhiteSpace(Model.CustomerUpdateNotes))
                 {
-                    <div class="p-3 bg-light rounded-3 border-start border-4 border-info">
+                    <div class="p-3 rounded-3" style="background: var(--cyan-light); border-right: 4px solid var(--cyan);">
                         <div class="text-muted small mb-1 fw-bold">إفادة الفريق القانوني:</div>
-                        <p class="mb-0 fw-semibold text-dark">@Model.CustomerUpdateNotes</p>
+                        <p class="mb-0 fw-600 text-dark">@Model.CustomerUpdateNotes</p>
                     </div>
                 }
                 else
                 {
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-clock-history fs-2 text-secondary mb-2 d-block"></i>
-                        <p class="mb-0 small">المعاملة قيد المتابعة والإجراء الرسمي لدى الجهات المعنية. ستظهر أي مستجدات أو تحديثات معتمدة هنا فور صدورها.</p>
+                    <div class="empty-state py-4">
+                        <i class="bi bi-clock-history"></i>
+                        <h6>قيد المتابعة الدورية</h6>
+                        <p>المعاملة قيد المتابعة والإجراء الرسمي لدى الجهات المعنية. ستظهر أي مستجدات فور اعتمادها.</p>
                     </div>
                 }
             </div>
@@ -97,17 +103,17 @@
     @if (Model.ApprovedDocuments.Any())
     {
         <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3 fw-bold d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-file-earmark-arrow-down text-success fs-5"></i>
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2 fw-700">
+                        <i class="bi bi-file-earmark-arrow-down text-success"></i>
                         <span>المستندات والمرفقات الرسمية المعتمدة (@Model.ApprovedDocuments.Count)</span>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>عنوان المستند</th>
                                     <th>التصنيف</th>
@@ -120,7 +126,7 @@
                                 @foreach (var doc in Model.ApprovedDocuments)
                                 {
                                     <tr>
-                                        <td class="fw-bold">
+                                        <td class="fw-700 text-dark">
                                             <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
                                             @doc.Title
                                         </td>

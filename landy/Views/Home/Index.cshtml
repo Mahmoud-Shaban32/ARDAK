@@ -1,25 +1,145 @@
+@inject Ardak.Application.Interfaces.ICurrentUserService CurrentUser
 @{
-    ViewData["Title"] = "نظام أرضك العقاري";
+    ViewData["Title"] = "منصة أرضك | الاستثمار وإدارة العقارات الفاخرة";
 }
 
-<div class="row justify-content-center py-5">
-    <div class="col-lg-8 text-center">
-        <div class="ardak-logo-icon mx-auto mb-4" style="width: 72px; height: 72px; font-size: 2.2rem; border-radius: 20px;">
-            <i class="bi bi-buildings"></i>
+<!-- ══ LUXURY ARCHITECTURAL HERO SECTION ══════════════════════ -->
+<div class="executive-hero-banner fade-in p-lg-5 p-4 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge py-1 px-3" style="background: rgba(197, 155, 39, 0.25); color: #fde68a; border: 1px solid rgba(253, 230, 138, 0.4); font-size: 0.8rem;">
+                    <i class="bi bi-gem me-1"></i>المنصة العقارية المتطورة
+                </span>
+                <span class="badge py-1 px-3" style="background: rgba(16, 147, 115, 0.25); color: #a7f3d0; border: 1px solid rgba(167, 243, 208, 0.4); font-size: 0.8rem;">
+                    <i class="bi bi-shield-check me-1"></i>صكوك ملكية رقمية موثقة
+                </span>
+            </div>
+            <h1 class="display-5 fw-900 text-white mb-3" style="letter-spacing: -0.03em; line-height: 1.25;">
+                إدارة الأصول العقارية وصكوك الملكية برؤية استثمارية فاخرة
+            </h1>
+            <p class="lead text-white-50 mb-4" style="max-width: 650px; font-size: 1.08rem; line-height: 1.7;">
+                منظومة أرضك المتكاملة لتوثيق الأراضي والفلل، ربط الملاك والشركاء، ومتابعة الإجراءات والمعاملات الرسمية لدى الجهات الحكومية بكل موثوقية واحتراف.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                @if (CurrentUser.IsAuthenticated)
+                {
+                    @if (CurrentUser.IsSuperAdmin || CurrentUser.IsAdmin)
+                    {
+                        <a asp-controller="InternalDashboard" asp-action="Index" class="btn-executive-primary">
+                            <i class="bi bi-speedometer2 fs-5"></i>
+                            <span>لوحة التحكم الإدارية</span>
+                        </a>
+                        <a asp-controller="Properties" asp-action="Index" class="btn-executive-outline">
+                            <i class="bi bi-houses"></i>
+                            <span>استعراض سجل العقارات</span>
+                        </a>
+                    }
+                    else if (CurrentUser.IsCustomer)
+                    {
+                        <a asp-controller="CustomerPortal" asp-action="Index" class="btn-executive-primary">
+                            <i class="bi bi-person-badge fs-5"></i>
+                            <span>بوابة العميل الإلكترونية</span>
+                        </a>
+                        <a asp-controller="CustomerPortal" asp-action="Properties" class="btn-executive-outline">
+                            <i class="bi bi-buildings"></i>
+                            <span>عقاراتي المسجلة</span>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn-executive-primary">
+                        <i class="bi bi-box-arrow-in-left fs-5"></i>
+                        <span>تسجيل الدخول للنظام</span>
+                    </a>
+                }
+            </div>
         </div>
-        <h1 class="display-5 fw-bold mb-3">أهلاً بك في نظام <span class="text-primary">أرضك</span> لإدارة العقارات</h1>
-        <p class="lead text-muted mb-4">
-            المنصة الداخلية الرائدة لإدارة السجلات العقارية، صكوك الملكية، ومسار الإجراءات والمعاملات الرسمية
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-            <a asp-controller="InternalDashboard" asp-action="Index" class="btn btn-primary btn-lg rounded-pill shadow px-4">
-                <i class="bi bi-speedometer2 me-1"></i>
-                <span>لوحة التحكم الإدارية</span>
-            </a>
-            <a asp-controller="CustomerPortal" asp-action="Index" class="btn btn-outline-primary btn-lg rounded-pill px-4">
-                <i class="bi bi-person-badge me-1"></i>
-                <span>بوابة العميل</span>
-            </a>
+
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px);">
+                <div class="d-flex align-items-center gap-3 mb-3 border-bottom pb-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                    <div class="ardak-brand-emblem" style="width: 48px; height: 48px; font-size: 1.4rem;">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-white fs-5">أرضك | ARDAK</div>
+                        <div class="small text-white-50">نظام إدارة الأصول والاستثمار</div>
+                    </div>
+                </div>
+
+                <div class="small text-white-50 mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="bi bi-check-circle text-emerald-400 me-1" style="color: var(--emerald-400);"></i>تشفير الصكوك والوثائق</span>
+                        <strong class="text-white">معتمد</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="bi bi-check-circle text-emerald-400 me-1" style="color: var(--emerald-400);"></i>تحديثات المعاملات الفورية</span>
+                        <strong class="text-white">مباشر</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-check-circle text-emerald-400 me-1" style="color: var(--emerald-400);"></i>بوابة عملاء مخصصة</span>
+                        <strong class="text-white">مفعلة</strong>
+                    </div>
+                </div>
+
+                <div class="p-2 rounded text-center small" style="background: rgba(16, 147, 115, 0.15); color: #a7f3d0; border: 1px solid rgba(16, 147, 115, 0.3);">
+                    <i class="bi bi-shield-check me-1"></i>نظام سحابي آمن ومحمي
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ CORE CAPABILITIES ═════════════════════════════════════ -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 p-4 ardak-hover-card text-center">
+            <div class="metric-icon-wrap icon-wrap-emerald mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.6rem; border-radius: var(--radius-lg);">
+                <i class="bi bi-houses"></i>
+            </div>
+            <h5 class="fw-800 mb-2">إدارة الأصول العقارية</h5>
+            <p class="text-muted small mb-0">
+                تسجيل متكامل لملفات الأراضي والفلل مع توثيق أرقام الصكوك والمخططات وإحداثيات GPS بدقة.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 p-4 ardak-hover-card text-center">
+            <div class="metric-icon-wrap icon-wrap-navy mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.6rem; border-radius: var(--radius-lg);">
+                <i class="bi bi-people"></i>
+            </div>
+            <h5 class="fw-800 mb-2">علاقات الملاك والشركاء</h5>
+            <p class="text-muted small mb-0">
+                ربط العملاء والمستثمرين والشركاء بنسب ملكية دقيقة وصلاحيات وصول مستقلة لكل طرف.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 p-4 ardak-hover-card text-center">
+            <div class="metric-icon-wrap icon-wrap-gold mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.6rem; border-radius: var(--radius-lg);">
+                <i class="bi bi-file-earmark-check"></i>
+            </div>
+            <h5 class="fw-800 mb-2">مسار المعاملات الحكومية</h5>
+            <p class="text-muted small mb-0">
+                متابعة دقيقة لمسار المعاملات الرسمية وتواريخ الاستحقاق ورسوم المعاملات لدى الجهات المعنية.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 p-4 ardak-hover-card text-center">
+            <div class="metric-icon-wrap icon-wrap-cyan mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.6rem; border-radius: var(--radius-lg);">
+                <i class="bi bi-folder2-open"></i>
+            </div>
+            <h5 class="fw-800 mb-2">أرشيف الصكوك الإلكتروني</h5>
+            <p class="text-muted small mb-0">
+                مستودع مشفّر وآمن لرفع ومشاركة صكوك الملكية الإلكترونية والوثائق الثبوتية مع المستفيدين.
+            </p>
         </div>
     </div>
 </div>

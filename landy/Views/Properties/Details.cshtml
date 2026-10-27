@@ -15,190 +15,234 @@
     </ol>
 </nav>
 
-<!-- Page Header Box -->
-<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-            <span class="badge @(Model.Type == PropertyType.Land ? "badge-subtle-secondary" : "badge-subtle-primary")">
-                @(Model.Type == PropertyType.Land ? "أرض" : "فيلا")
-            </span>
-            <h2 class="h3 fw-bold mb-0">@Model.ReferenceNumber &mdash; @Model.Title</h2>
-            @switch (Model.Status)
-            {
-                case PropertyStatus.Active:
-                    <span class="badge badge-subtle-success">نشط</span>
-                    break;
-                case PropertyStatus.UnderReview:
-                    <span class="badge badge-subtle-warning">قيد المراجعة</span>
-                    break;
-                case PropertyStatus.Reserved:
-                    <span class="badge badge-subtle-info">محجوز</span>
-                    break;
-                case PropertyStatus.Sold:
-                    <span class="badge badge-subtle-secondary">مباع</span>
-                    break;
-                case PropertyStatus.Archived:
-                    <span class="badge bg-secondary">مؤرشف</span>
-                    break;
-            }
-        </div>
-        <p class="text-muted mb-0 small">
-            تاريخ التسجيل: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm UTC") &bull; آخر تعديل: @(Model.ModifiedAtUtc.HasValue ? Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm UTC") : "لا يوجد")
-        </p>
-    </div>
-    <div class="d-flex gap-2 flex-wrap">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill shadow-sm">
-            <i class="bi bi-pencil me-1"></i> تعديل العقار
-        </a>
-        @if (Model.Status == PropertyStatus.Archived)
-        {
-            <form asp-action="Restore" asp-route-id="@Model.Id" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-success rounded-pill">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> استعادة للنشط
-                </button>
-            </form>
-        }
-        else
-        {
-            <form asp-action="Archive" asp-route-id="@Model.Id" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger rounded-pill" onclick="return confirm('أرشفة سجل هذا العقار؟');">
-                    <i class="bi bi-archive me-1"></i> أرشفة
-                </button>
-            </form>
-        }
-        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
-            <i class="bi bi-arrow-right"></i> القائمة
-        </a>
-    </div>
-</div>
-
+<!-- Alerts -->
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
         <div>@TempData["SuccessMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
-
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
         <div>@TempData["ErrorMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
+<!-- ══ PROPERTY HERO ════════════════════════════════════════ -->
+<div class="property-hero fade-in mb-4">
+    <div class="d-flex align-items-start gap-4 flex-wrap" style="position:relative;z-index:1;">
+        <div class="property-hero-icon">
+            <i class="@(Model.Type == PropertyType.Land ? "bi bi-geo" : "bi bi-house-door")"></i>
+        </div>
+        <div class="flex-grow-1">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="badge" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.22);">
+                    @(Model.Type == PropertyType.Land ? "أرض" : "فيلا")
+                </span>
+                @switch (Model.Status)
+                {
+                    case PropertyStatus.Active:
+                        <span class="badge badge-subtle-success">نشط</span>
+                        break;
+                    case PropertyStatus.UnderReview:
+                        <span class="badge badge-subtle-warning">قيد المراجعة</span>
+                        break;
+                    case PropertyStatus.Reserved:
+                        <span class="badge badge-subtle-info">محجوز</span>
+                        break;
+                    case PropertyStatus.Sold:
+                        <span class="badge badge-subtle-secondary">مباع</span>
+                        break;
+                    case PropertyStatus.Archived:
+                        <span class="badge bg-secondary">مؤرشف</span>
+                        break;
+                }
+            </div>
+            <h1 class="property-hero-title">@Model.ReferenceNumber &mdash; @Model.Title</h1>
+            <p class="property-hero-sub mb-3">
+                <i class="bi bi-clock me-1"></i>
+                تسجيل: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm UTC")
+                @if (Model.ModifiedAtUtc.HasValue)
+                {
+                    <span>&bull; آخر تعديل: @Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm UTC")</span>
+                }
+            </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap" style="position:relative;z-index:1;">
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="btn btn-sm rounded-pill px-3"
+               style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);">
+                <i class="bi bi-pencil"></i>
+                <span>تعديل</span>
+            </a>
+            @if (Model.Status == PropertyStatus.Archived)
+            {
+                <form asp-action="Restore" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            class="btn btn-sm rounded-pill px-3"
+                            style="background:rgba(26,127,100,0.35);color:#80e0c0;border:1px solid rgba(26,127,100,0.4);">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>استعادة</span>
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form asp-action="Archive" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            class="btn btn-sm rounded-pill px-3"
+                            style="background:rgba(192,40,42,0.25);color:#ffaaaa;border:1px solid rgba(192,40,42,0.35);"
+                            onclick="return confirm('أرشفة سجل هذا العقار؟');">
+                        <i class="bi bi-archive"></i>
+                        <span>أرشفة</span>
+                    </button>
+                </form>
+            }
+            <a asp-action="Index"
+               class="btn btn-sm rounded-pill px-3"
+               style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.15);">
+                <i class="bi bi-arrow-right"></i>
+                <span>القائمة</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MAIN GRID ════════════════════════════════════════════ -->
 <div class="row g-4">
-    <!-- العمود الأيمن: الموقع والمساحة -->
+
+    <!-- LEFT: Location & Area -->
     <div class="col-lg-7">
-        <!-- الموقع والوصف -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-geo-alt text-primary fs-5"></i>
+
+        <!-- Location & Description -->
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-geo-alt text-primary"></i>
                 <span>الموقع والوصف التفصيلي</span>
             </div>
             <div class="card-body p-4">
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">المنطقة / المحافظة</div>
-                    <div class="col-sm-8 fw-semibold">@Model.Governorate</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">المنطقة / المحافظة</span>
+                    <span class="info-val fw-600">@Model.Governorate</span>
                 </div>
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">المدينة</div>
-                    <div class="col-sm-8 fw-semibold">@Model.City</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">المدينة</span>
+                    <span class="info-val fw-600">@Model.City</span>
                 </div>
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">الحي / المخطط</div>
-                    <div class="col-sm-8">@Model.DistrictOrArea</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الحي / المخطط</span>
+                    <span class="info-val">@Model.DistrictOrArea</span>
                 </div>
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">العنوان التفصيلي</div>
-                    <div class="col-sm-8">@(string.IsNullOrEmpty(Model.AddressDetails) ? "غير محدد" : Model.AddressDetails)</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">العنوان التفصيلي</span>
+                    <span class="info-val">@(string.IsNullOrEmpty(Model.AddressDetails) ? "غير محدد" : Model.AddressDetails)</span>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4 text-muted small">الوصف</div>
-                    <div class="col-sm-8 text-dark">@(string.IsNullOrEmpty(Model.Description) ? "لا يوجد وصف مدخل." : Model.Description)</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الوصف</span>
+                    <span class="info-val text-muted">@(string.IsNullOrEmpty(Model.Description) ? "لا يوجد وصف مدخل." : Model.Description)</span>
                 </div>
             </div>
         </div>
 
-        <!-- المساحة والبيانات الفنية والصك -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-bounding-box-circles text-success fs-5"></i>
+        <!-- Area, GPS, Deed -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-bounding-box-circles text-success"></i>
                 <span>المساحة، الإحداثيات، وصك الملكية</span>
             </div>
             <div class="card-body p-4">
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">المساحة الإجمالية</div>
-                    <div class="col-sm-8 fw-bold text-primary fs-5 font-monospace">
+                <div class="info-section-row">
+                    <span class="info-lbl">المساحة الإجمالية</span>
+                    <span class="info-val fw-700 text-primary font-monospace fs-5">
                         @Model.AreaMeasurement.ToString("N2") @Model.AreaUnit
-                    </div>
+                    </span>
                 </div>
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">الإحداثيات الجغرافية (GPS)</div>
-                    <div class="col-sm-8">
+                <div class="info-section-row">
+                    <span class="info-lbl">الإحداثيات (GPS)</span>
+                    <span class="info-val">
                         @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
                         {
-                            <code class="font-monospace bg-light p-1 rounded" dir="ltr">@Model.Latitude.Value.ToString("F6"), @Model.Longitude.Value.ToString("F6")</code>
-                            <a href="https://maps.google.com/?q=@Model.Latitude.Value,@Model.Longitude.Value" target="_blank" class="btn btn-sm btn-outline-primary ms-2 rounded-pill py-0 px-2" style="font-size: 0.8rem;">
-                                <i class="bi bi-map me-1"></i> فتح في خرائط Google
+                            <code class="font-monospace bg-light p-1 rounded small" dir="ltr">
+                                @Model.Latitude.Value.ToString("F6"), @Model.Longitude.Value.ToString("F6")
+                            </code>
+                            <a href="https://maps.google.com/?q=@Model.Latitude.Value,@Model.Longitude.Value"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-primary ms-2 rounded-pill py-0 px-2"
+                               style="font-size:0.78rem;">
+                                <i class="bi bi-map me-1"></i>خرائط Google
                             </a>
                         }
                         else
                         {
                             <span class="text-muted">غير مسجلة</span>
                         }
-                    </div>
+                    </span>
                 </div>
-                <div class="row mb-3 pb-2 border-bottom">
-                    <div class="col-sm-4 text-muted small">نوع الملكية</div>
-                    <div class="col-sm-8">@(string.IsNullOrEmpty(Model.OwnershipType) ? "صك ملكية إلكتروني مطلق" : Model.OwnershipType)</div>
+                <div class="info-section-row">
+                    <span class="info-lbl">نوع الملكية</span>
+                    <span class="info-val">@(string.IsNullOrEmpty(Model.OwnershipType) ? "صك ملكية إلكتروني مطلق" : Model.OwnershipType)</span>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4 text-muted small">رقم الصك / الوثيقة</div>
-                    <div class="col-sm-8">
+                <div class="info-section-row">
+                    <span class="info-lbl">رقم الصك / الوثيقة</span>
+                    <span class="info-val">
                         @if (!string.IsNullOrEmpty(Model.DeedOrTitleNumber))
                         {
-                            <span class="badge bg-light text-dark border font-monospace fs-7">@Model.DeedOrTitleNumber</span>
+                            <span class="badge bg-light text-dark border font-monospace">@Model.DeedOrTitleNumber</span>
                         }
                         else
                         {
                             <span class="text-muted">غير متوفر</span>
                         }
-                    </div>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- العمود الأيسر: الملاك والملاحظات السرية -->
+    <!-- RIGHT: Owners & Internal Notes -->
     <div class="col-lg-5">
-        <!-- المالك الأساسي -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-person-check text-primary fs-5"></i>
+
+        <!-- Primary Owner -->
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-person-check text-primary"></i>
                 <span>المالك الأساسي للعقار</span>
             </div>
             <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-bold mb-0 text-dark">@Model.PrimaryCustomerName</h6>
-                    <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.PrimaryCustomerId" class="btn btn-sm btn-outline-primary rounded-pill py-1 px-3">
-                        <i class="bi bi-eye"></i> الملف
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width:44px;height:44px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:1.1rem;flex-shrink:0;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div>
+                            <div class="fw-700 text-dark">@Model.PrimaryCustomerName</div>
+                            <div class="small font-monospace text-muted" dir="ltr">@Model.PrimaryCustomerPhone</div>
+                        </div>
+                    </div>
+                    <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.PrimaryCustomerId"
+                       class="btn btn-sm btn-outline-primary rounded-pill py-1 px-3">
+                        <i class="bi bi-eye"></i>
+                        <span>الملف</span>
                     </a>
                 </div>
-                <p class="text-muted small mb-0 font-monospace" dir="ltr">@Model.PrimaryCustomerPhone</p>
             </div>
         </div>
 
-        <!-- الشركاء والملاك المرتبطين -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <span class="fw-bold"><i class="bi bi-people text-info me-2"></i>الملاك المشتركون والشركاء</span>
-                <span class="badge badge-subtle-primary">@Model.AssociatedCustomers.Count إجمالي</span>
+        <!-- Co-owners -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="d-flex align-items-center gap-2 fw-700">
+                    <i class="bi bi-people text-info"></i>
+                    <span>الملاك المشتركون والشركاء</span>
+                </span>
+                <span class="badge-subtle-primary badge">@Model.AssociatedCustomers.Count إجمالي</span>
             </div>
             <div class="card-body p-4">
                 @if (Model.AssociatedCustomers.Any())
@@ -206,16 +250,18 @@
                     <ul class="list-group list-group-flush mb-4">
                         @foreach (var assoc in Model.AssociatedCustomers)
                         {
-                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center border-0 border-bottom">
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center border-0 border-bottom py-2">
                                 <div>
-                                    <div class="fw-bold">
-                                        <a asp-controller="Customers" asp-action="Details" asp-route-id="@assoc.CustomerId" class="text-decoration-none text-primary">
+                                    <div class="fw-700 small">
+                                        <a asp-controller="Customers" asp-action="Details" asp-route-id="@assoc.CustomerId"
+                                           class="text-decoration-none text-primary">
                                             @assoc.CustomerName
                                         </a>
-                                        <span class="badge badge-subtle-primary ms-1">@assoc.OwnershipRole</span>
+                                        <span class="badge-subtle-primary badge ms-1 small">@assoc.OwnershipRole</span>
                                     </div>
                                     <div class="text-muted small mt-1">
-                                        النسبة: @(assoc.OwnershipPercentage.HasValue ? $"{assoc.OwnershipPercentage.Value:N1}%" : "غير محدد") &bull; @assoc.CustomerPhone
+                                        النسبة: @(assoc.OwnershipPercentage.HasValue ? $"{assoc.OwnershipPercentage.Value:N1}%" : "غير محدد")
+                                        &bull; @assoc.CustomerPhone
                                     </div>
                                 </div>
                                 @if (assoc.CustomerId != Model.PrimaryCustomerId)
@@ -224,8 +270,10 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="propertyId" value="@Model.Id" />
                                         <input type="hidden" name="customerId" value="@assoc.CustomerId" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2" onclick="return confirm('إلغاء ربط @assoc.CustomerName بهذا العقار؟');">
-                                            <i class="bi bi-x"></i> فك الارتباط
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2"
+                                                onclick="return confirm('إلغاء ربط @assoc.CustomerName بهذا العقار؟');">
+                                            <i class="bi bi-x"></i>
                                         </button>
                                     </form>
                                 }
@@ -234,28 +282,32 @@
                     </ul>
                 }
 
-                <!-- نموذج إضافة مالك مشارك -->
+                <!-- Associate Customer Form -->
                 @if (availableCustomers != null && availableCustomers.Any())
                 {
-                    <div class="p-3 bg-light rounded-3 border">
-                        <h6 class="fw-bold mb-2 small">ربط عميل إضافي (شريك / مستثمر)</h6>
+                    <div class="p-3 rounded-3 border" style="background:var(--bg-elevated);">
+                        <p class="fw-700 small mb-2">ربط عميل إضافي (شريك / مستثمر)</p>
                         <form asp-action="AssociateCustomer" method="post" class="row g-2">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="propertyId" value="@Model.Id" />
                             <div class="col-12">
-                                <select name="customerId" class="form-select form-select-sm" asp-items="availableCustomers" required>
+                                <select name="customerId" class="form-select form-select-sm"
+                                        asp-items="availableCustomers" required>
                                     <option value="">-- اختر العميل --</option>
                                 </select>
                             </div>
                             <div class="col-md-7">
-                                <input type="text" name="role" class="form-control form-control-sm" placeholder="الصفة (شريك، مساهم)" value="شريك" />
+                                <input type="text" name="role" class="form-control form-control-sm"
+                                       placeholder="الصفة (شريك، مساهم)" value="شريك" />
                             </div>
                             <div class="col-md-5">
-                                <input type="number" step="0.01" name="ownershipPercentage" class="form-control form-control-sm" placeholder="النسبة %" />
+                                <input type="number" step="0.01" name="ownershipPercentage"
+                                       class="form-control form-control-sm"
+                                       placeholder="النسبة %" />
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">
-                                    <i class="bi bi-plus-circle me-1"></i> إضافة ارتباط العميل
+                                    <i class="bi bi-plus-circle me-1"></i>إضافة ارتباط العميل
                                 </button>
                             </div>
                         </form>
@@ -264,16 +316,14 @@
             </div>
         </div>
 
-        <!-- ملاحظات داخلية سرية -->
-        <div class="card shadow-sm border-0 border-start border-4 border-danger">
-            <div class="card-header bg-white py-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h6 class="fw-bold mb-0 text-danger d-flex align-items-center gap-1">
-                        <i class="bi bi-shield-lock-fill"></i>
-                        <span>ملاحظات داخلية لفريق العمل</span>
-                    </h6>
-                    <span class="badge badge-subtle-danger">سري للغاية</span>
-                </div>
+        <!-- Internal Notes (Confidential) -->
+        <div class="card internal-note-card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h6 class="fw-700 mb-0 text-danger d-flex align-items-center gap-1">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>ملاحظات داخلية لفريق العمل</span>
+                </h6>
+                <span class="badge-subtle-danger badge">سري للغاية</span>
             </div>
             <div class="card-body p-4">
                 @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
@@ -289,20 +339,25 @@
     </div>
 </div>
 
-<!-- المعاملات المرتبطة بهذا العقار -->
-<div class="card shadow-sm border-0 mt-4">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0"><i class="bi bi-clipboard2-check text-primary me-2"></i>المعاملات والإجراءات الرسمية للعقار</h5>
-        <a asp-controller="Procedures" asp-action="Create" asp-route-propertyId="@Model.Id" class="btn btn-sm btn-primary rounded-pill shadow-xs">
-            <i class="bi bi-plus-circle me-1"></i> معاملة جديدة
+<!-- ══ PROCEDURES TABLE ══════════════════════════════════════ -->
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="fw-700 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-clipboard2-check text-primary"></i>
+            <span>المعاملات والإجراءات الرسمية للعقار</span>
+        </h5>
+        <a asp-controller="Procedures" asp-action="Create" asp-route-propertyId="@Model.Id"
+           class="btn btn-sm btn-primary rounded-pill">
+            <i class="bi bi-plus-circle me-1"></i>معاملة جديدة
         </a>
     </div>
     <div class="card-body p-0">
         @if (!procedures.Any())
         {
-            <div class="text-center text-muted py-5">
-                <i class="bi bi-clipboard2-x fs-1 d-block mb-2 text-secondary"></i>
-                لا توجد معاملات مسجلة لهذا العقار حتى الآن.
+            <div class="empty-state">
+                <i class="bi bi-clipboard2-x"></i>
+                <h6>لا توجد معاملات مسجلة</h6>
+                <p>لا توجد معاملات مسجلة لهذا العقار حتى الآن.</p>
             </div>
         }
         else
@@ -324,14 +379,14 @@
                         {
                             <tr>
                                 <td><span class="badge badge-subtle-primary">@p.TypeLabel</span></td>
-                                <td class="font-monospace">@(p.ApplicationNumber ?? "—")</td>
-                                <td>@(p.ResponsibleAuthority ?? "—")</td>
+                                <td class="font-monospace small">@(p.ApplicationNumber ?? "—")</td>
+                                <td class="small">@(p.ResponsibleAuthority ?? "—")</td>
                                 <td><partial name="_ProcedureStatusBadge" model="p.Status" /></td>
                                 <td>
                                     @if (p.NextActionDeadline.HasValue)
                                     {
-                                        var css = p.HasOverdueDeadline ? "text-danger fw-bold" : "text-body";
-                                        <span class="@css">
+                                        var css = p.HasOverdueDeadline ? "text-danger fw-700" : "text-body";
+                                        <span class="@css small">
                                             <i class="bi bi-calendar3 me-1"></i>
                                             @p.NextActionDeadline.Value.ToString("yyyy-MM-dd")
                                             @if (p.HasOverdueDeadline)
@@ -340,14 +395,16 @@
                                             }
                                         </span>
                                     }
-                                    else { <span class="text-muted">—</span> }
+                                    else { <span class="text-muted small">—</span> }
                                 </td>
                                 <td class="text-end">
-                                    <a asp-controller="Procedures" asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary py-1 px-2 me-1">
-                                        <i class="bi bi-eye"></i> عرض
+                                    <a asp-controller="Procedures" asp-action="Details" asp-route-id="@p.Id"
+                                       class="btn btn-sm btn-outline-secondary py-1 px-2 me-1">
+                                        <i class="bi bi-eye"></i>
                                     </a>
-                                    <a asp-controller="Procedures" asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary py-1 px-2">
-                                        <i class="bi bi-pencil"></i> تعديل
+                                    <a asp-controller="Procedures" asp-action="Edit" asp-route-id="@p.Id"
+                                       class="btn btn-sm btn-outline-primary py-1 px-2">
+                                        <i class="bi bi-pencil"></i>
                                     </a>
                                 </td>
                             </tr>

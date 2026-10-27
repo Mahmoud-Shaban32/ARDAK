@@ -9,7 +9,7 @@
     <ol class="breadcrumb small">
         <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">المعاملات</a></li>
         <li class="breadcrumb-item">
-            <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none">
+            <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none font-monospace">
                 @Model.PropertyReferenceNumber
             </a>
         </li>
@@ -19,35 +19,37 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
         <div>@TempData["SuccessMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<!-- Page Header -->
-<div class="page-header-box d-flex justify-content-between align-items-start flex-wrap gap-3">
+<!-- ══ PAGE HEADER ════════════════════════════════════════════ -->
+<div class="page-header-box d-flex justify-content-between align-items-start flex-wrap gap-3 fade-in">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-            <h1 class="h3 fw-bold mb-0">
+            <h1 class="h3 fw-800 mb-0">
                 <i class="bi bi-clipboard2-check text-primary me-1"></i>@Model.TypeLabel
             </h1>
             <partial name="_ProcedureStatusBadge" model="Model.Status" />
         </div>
         <p class="text-muted mb-0 small">
             العقار المرتبط:
-            <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none fw-bold text-primary">
+            <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none fw-700 text-primary">
                 @Model.PropertyReferenceNumber &ndash; @Model.PropertyTitle
             </a>
         </p>
     </div>
     <div class="d-flex gap-2">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill shadow-sm">
-            <i class="bi bi-pencil me-1"></i> تعديل المعاملة
+            <i class="bi bi-pencil"></i>
+            <span>تعديل المعاملة</span>
         </a>
         <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
-            <i class="bi bi-arrow-right"></i> القائمة
+            <i class="bi bi-arrow-right"></i>
+            <span>القائمة</span>
         </a>
     </div>
 </div>
@@ -55,33 +57,38 @@
 <div class="row g-4">
     <!-- 1. البيانات الأساسية -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-info-circle text-primary fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle text-primary"></i>
                 <span>البيانات الأساسية للمسار</span>
             </div>
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-5 text-muted small">نوع المعاملة</dt>
-                    <dd class="col-sm-7 fw-bold">@Model.TypeLabel</dd>
-
-                    <dt class="col-sm-5 text-muted small">رقم الطلب / المرجع</dt>
-                    <dd class="col-sm-7 font-monospace">@(Model.ApplicationNumber ?? "—")</dd>
-
-                    <dt class="col-sm-5 text-muted small">الجهة المسؤولة</dt>
-                    <dd class="col-sm-7">@(Model.ResponsibleAuthority ?? "—")</dd>
-
-                    <dt class="col-sm-5 text-muted small">تاريخ التقديم</dt>
-                    <dd class="col-sm-7">
+            <div class="card-body p-4">
+                <div class="info-section-row">
+                    <span class="info-lbl">نوع المعاملة</span>
+                    <span class="info-val fw-700 text-dark">@Model.TypeLabel</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">رقم الطلب / المرجع</span>
+                    <span class="info-val font-monospace">@(Model.ApplicationNumber ?? "—")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">الجهة المسؤولة</span>
+                    <span class="info-val fw-600">@(Model.ResponsibleAuthority ?? "—")</span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">تاريخ التقديم</span>
+                    <span class="info-val">
                         @(Model.SubmissionDate.HasValue ? Model.SubmissionDate.Value.ToString("yyyy-MM-dd") : "—")
-                    </dd>
-
-                    <dt class="col-sm-5 text-muted small">موعد الإجراء القادم</dt>
-                    <dd class="col-sm-7">
+                    </span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">موعد الإجراء القادم</span>
+                    <span class="info-val">
                         @if (Model.NextActionDeadline.HasValue)
                         {
-                            var css = Model.HasOverdueDeadline ? "text-danger fw-bold" : string.Empty;
+                            var css = Model.HasOverdueDeadline ? "text-danger fw-700" : "text-body";
                             <span class="@css">
+                                <i class="bi bi-calendar3 me-1"></i>
                                 @Model.NextActionDeadline.Value.ToString("yyyy-MM-dd")
                                 @if (Model.HasOverdueDeadline)
                                 {
@@ -93,59 +100,64 @@
                         {
                             <span class="text-muted">—</span>
                         }
-                    </dd>
-
-                    @if (!string.IsNullOrWhiteSpace(Model.NextActionDescription))
-                    {
-                        <dt class="col-sm-5 text-muted small">الإجراء المطلوب</dt>
-                        <dd class="col-sm-7 text-dark fw-semibold">@Model.NextActionDescription</dd>
-                    }
-
-                    <dt class="col-sm-5 text-muted small">تاريخ الإنشاء</dt>
-                    <dd class="col-sm-7 small text-muted">@Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC</dd>
-
-                    @if (Model.ModifiedAtUtc.HasValue)
-                    {
-                        <dt class="col-sm-5 text-muted small">آخر تحديث</dt>
-                        <dd class="col-sm-7 small text-muted">@Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm") UTC</dd>
-                    }
-                </dl>
+                    </span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.NextActionDescription))
+                {
+                    <div class="info-section-row">
+                        <span class="info-lbl">الإجراء المطلوب</span>
+                        <span class="info-val text-dark fw-600">@Model.NextActionDescription</span>
+                    </div>
+                }
+                <div class="info-section-row">
+                    <span class="info-lbl">تاريخ الإنشاء</span>
+                    <span class="info-val small text-muted">@Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC</span>
+                </div>
+                @if (Model.ModifiedAtUtc.HasValue)
+                {
+                    <div class="info-section-row">
+                        <span class="info-lbl">آخر تحديث</span>
+                        <span class="info-val small text-muted">@Model.ModifiedAtUtc.Value.ToString("yyyy-MM-dd HH:mm") UTC</span>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
     <!-- 2. المتابعة المالية -->
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-cash-coin text-success fs-5"></i>
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-cash-coin text-success"></i>
                 <span>المتابعة المالية والتكاليف</span>
             </div>
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-5 text-muted small">إجمالي التكلفة / الرسوم</dt>
-                    <dd class="col-sm-7 font-monospace fw-bold">
+            <div class="card-body p-4">
+                <div class="info-section-row">
+                    <span class="info-lbl">إجمالي التكلفة / الرسوم</span>
+                    <span class="info-val font-monospace fw-700">
                         @(Model.TotalFee.HasValue ? $"{Model.TotalFee:N2} ريال" : "—")
-                    </dd>
-
-                    <dt class="col-sm-5 text-muted small">المبلغ المدفوع</dt>
-                    <dd class="col-sm-7 font-monospace text-success fw-bold">
+                    </span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">المبلغ المدفوع</span>
+                    <span class="info-val font-monospace text-success fw-700">
                         @(Model.AmountPaid.HasValue ? $"{Model.AmountPaid:N2} ريال" : "—")
-                    </dd>
-
-                    <dt class="col-sm-5 text-muted small">المتبقي المطلوب</dt>
-                    <dd class="col-sm-7 font-monospace">
+                    </span>
+                </div>
+                <div class="info-section-row">
+                    <span class="info-lbl">المتبقي المطلوب</span>
+                    <span class="info-val font-monospace">
                         @if (Model.BalanceDue.HasValue)
                         {
-                            var balCss = Model.BalanceDue.Value > 0 ? "text-danger fw-bold" : "text-success fw-bold";
+                            var balCss = Model.BalanceDue.Value > 0 ? "text-danger fw-700" : "text-success fw-700";
                             <span class="@balCss">@Model.BalanceDue.Value.ToString("N2") ريال</span>
                         }
                         else
                         {
                             <span class="text-muted">—</span>
                         }
-                    </dd>
-                </dl>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -154,12 +166,12 @@
     @if (!string.IsNullOrWhiteSpace(Model.MissingDocuments))
     {
         <div class="col-12">
-            <div class="card shadow-sm border-0 border-start border-4 border-warning">
-                <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2 text-warning-emphasis">
-                    <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
-                    <span>المستندات والمتطلبات الناقصة المطلوبة</span>
+            <div class="card" style="border-right: 4px solid var(--amber); background: var(--amber-light);">
+                <div class="card-header d-flex align-items-center gap-2" style="background: transparent; border-bottom: 1px solid rgba(192, 122, 26, 0.2); color: var(--amber);">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <span class="fw-700">المستندات والمتطلبات الناقصة المطلوبة</span>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <p class="mb-0 text-dark" style="white-space: pre-wrap;">@Model.MissingDocuments</p>
                 </div>
             </div>
@@ -170,12 +182,12 @@
     @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
     {
         <div class="col-12">
-            <div class="card shadow-sm border-0 border-start border-4 border-danger">
-                <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2 text-danger">
+            <div class="card internal-note-card">
+                <div class="card-header d-flex align-items-center gap-2">
                     <i class="bi bi-shield-lock-fill fs-5"></i>
-                    <span>ملاحظات داخلية لفريق العمل (سري)</span>
+                    <span class="fw-700">ملاحظات داخلية لفريق العمل (سري للغاية)</span>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <p class="mb-0 text-muted" style="white-space: pre-wrap;">@Model.InternalNotes</p>
                 </div>
             </div>
@@ -184,15 +196,19 @@
 
     <!-- 5. سجل تحديثات وتاريخ الحالة -->
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-clock-history text-primary fs-5"></i>
+        <div class="card border-0">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-primary"></i>
                 <span>سجل حركة الحالة وتاريخ المعاملة</span>
             </div>
             <div class="card-body p-0">
                 @if (!Model.StatusHistory.Any())
                 {
-                    <p class="text-muted p-4 mb-0 text-center">لا توجد حركات سابقة مسجلة على هذه المعاملة.</p>
+                    <div class="empty-state">
+                        <i class="bi bi-clock-history"></i>
+                        <h6>لا توجد حركات سابقة</h6>
+                        <p>لا توجد تغييرات سابقة مسجلة على هذه المعاملة.</p>
+                    </div>
                 }
                 else
                 {
@@ -214,7 +230,7 @@
                                         <td class="text-nowrap small font-monospace">@h.ChangedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
                                         <td><partial name="_ProcedureStatusBadge" model="h.FromStatus" /></td>
                                         <td><partial name="_ProcedureStatusBadge" model="h.ToStatus" /></td>
-                                        <td>@(h.ChangeNote ?? "—")</td>
+                                        <td class="small">@(h.ChangeNote ?? "—")</td>
                                         <td class="text-muted small">@(h.ChangedByUserId ?? "النظام")</td>
                                     </tr>
                                 }

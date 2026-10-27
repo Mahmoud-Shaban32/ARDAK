@@ -4,14 +4,16 @@
     ViewData["Title"] = "المعاملات";
     var filter = ViewBag.Filter as Ardak.Application.DTOs.ProcedureSearchFilterDto
                  ?? new Ardak.Application.DTOs.ProcedureSearchFilterDto();
+    bool hasFilter = filter.Type.HasValue || filter.Status.HasValue || (filter.OverdueOnly == true);
 }
 
-<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
+<!-- ══ PAGE HEADER ════════════════════════════════════════════ -->
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3 fade-in">
     <div>
-        <h2 class="h3 fw-bold mb-1">
+        <h2 class="h3 fw-800 mb-1">
             <i class="bi bi-file-earmark-check text-info me-2"></i>إدارة المعاملات والإجراءات
         </h2>
-        <p class="text-muted mb-0 small">متابعة مسارات المعاملات لدى الجهات والدوائر الحكومية والخاصة</p>
+        <p class="text-muted mb-0 small">متابعة مسارات المعاملات لدى الدوائر الرسمية والجهات الحكومية والخاصة</p>
     </div>
     <a asp-action="Create" class="btn btn-primary rounded-pill shadow-sm">
         <i class="bi bi-plus-circle me-1"></i>
@@ -21,8 +23,8 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
         <div>@TempData["SuccessMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
@@ -30,61 +32,66 @@
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
         <div>@TempData["ErrorMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<!-- نموذج التصفية -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-3">
-        <form method="get" class="row g-3 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted">نوع المعاملة</label>
-                <select name="Type" asp-items="@ViewBag.ProcedureTypes" class="form-select">
-                    <option value="">جميع الأنواع</option>
-                </select>
+<!-- ══ FILTER BAR ════════════════════════════════════════════ -->
+<div class="filter-bar mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small">نوع المعاملة</label>
+            <select name="Type" asp-items="@ViewBag.ProcedureTypes" class="form-select">
+                <option value="">جميع الأنواع</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small">الحالة</label>
+            <select name="Status" asp-items="@ViewBag.ProcedureStatuses" class="form-select">
+                <option value="">جميع الحالات</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <div class="form-check pb-2">
+                <input class="form-check-input" type="checkbox" name="OverdueOnly" value="true"
+                       @(filter.OverdueOnly == true ? "checked" : "") id="chkOverdue">
+                <label class="form-check-label small fw-bold text-danger" for="chkOverdue">
+                    <i class="bi bi-exclamation-circle me-1"></i>المتأخرة فقط
+                </label>
             </div>
-            <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted">الحالة</label>
-                <select name="Status" asp-items="@ViewBag.ProcedureStatuses" class="form-select">
-                    <option value="">جميع الحالات</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <div class="form-check pb-2">
-                    <input class="form-check-input" type="checkbox" name="OverdueOnly" value="true"
-                           @(filter.OverdueOnly == true ? "checked" : "") id="chkOverdue">
-                    <label class="form-check-label small fw-bold text-danger" for="chkOverdue">
-                        <i class="bi bi-exclamation-circle me-1"></i>المتأخرة فقط
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-outline-primary flex-fill">
-                    <i class="bi bi-funnel"></i> تصفية
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary">
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill">
+                <i class="bi bi-funnel"></i> تصفية
+            </button>
+            @if (hasFilter)
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary" title="مسح الفلاتر">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
-            </div>
-        </form>
-    </div>
+            }
+        </div>
+    </form>
 </div>
 
+<!-- ══ TABLE ═════════════════════════════════════════════════ -->
 @if (!Model.Any())
 {
-    <div class="card shadow-sm border-0 py-5 text-center text-muted">
-        <i class="bi bi-clipboard2-x fs-1 d-block mb-2 text-secondary"></i>
-        <p class="mb-2">لا توجد معاملات مسجلة مطابقة للفلاتر.</p>
-        <a asp-action="Create" class="btn btn-sm btn-primary mx-auto">إنشاء أول معاملة</a>
+    <div class="card border-0 py-5 text-center text-muted">
+        <div class="empty-state">
+            <i class="bi bi-clipboard2-x"></i>
+            <h6>لا توجد معاملات مسجلة مطابقة</h6>
+            <p class="mb-3">لم يتم العثور على أي معاملات تطابق معايير البحث.</p>
+            <a asp-action="Create" class="btn btn-sm btn-primary rounded-pill px-4 mx-auto">إنشاء أول معاملة</a>
+        </div>
     </div>
 }
 else
 {
-    <div class="card shadow-sm border-0">
+    <div class="card border-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead>
@@ -107,7 +114,7 @@ else
                             </td>
                             <td>
                                 <a asp-controller="Properties" asp-action="Details" asp-route-id="@p.PropertyId"
-                                   class="text-decoration-none fw-bold text-primary">
+                                   class="text-decoration-none fw-700 text-primary font-monospace small">
                                     @p.PropertyReferenceNumber
                                 </a>
                                 <div class="small text-muted">@p.PropertyTitle</div>
@@ -115,14 +122,14 @@ else
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(p.ApplicationNumber))
                                 {
-                                    <code class="bg-light p-1 rounded font-monospace">@p.ApplicationNumber</code>
+                                    <code class="bg-light p-1 rounded font-monospace small">@p.ApplicationNumber</code>
                                 }
                                 else
                                 {
-                                    <span class="text-muted">—</span>
+                                    <span class="text-muted small">—</span>
                                 }
                             </td>
-                            <td>
+                            <td class="small">
                                 <span class="badge bg-light text-dark border">
                                     @(p.ResponsibleAuthority ?? "—")
                                 </span>
@@ -131,8 +138,8 @@ else
                             <td>
                                 @if (p.NextActionDeadline.HasValue)
                                 {
-                                    var cssClass = p.HasOverdueDeadline ? "text-danger fw-bold" : "text-body";
-                                    <span class="@cssClass">
+                                    var cssClass = p.HasOverdueDeadline ? "text-danger fw-700" : "text-body";
+                                    <span class="@cssClass small">
                                         <i class="bi bi-calendar3 me-1"></i>
                                         @p.NextActionDeadline.Value.ToString("yyyy-MM-dd")
                                         @if (p.HasOverdueDeadline)
@@ -143,18 +150,20 @@ else
                                 }
                                 else
                                 {
-                                    <span class="text-muted">—</span>
+                                    <span class="text-muted small">—</span>
                                 }
                             </td>
                             <td class="text-end">
-                                <a asp-action="Details" asp-route-id="@p.Id"
-                                   class="btn btn-sm btn-outline-secondary py-1 px-2 me-1">
-                                    <i class="bi bi-eye"></i> عرض
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@p.Id"
-                                   class="btn btn-sm btn-outline-primary py-1 px-2">
-                                    <i class="bi bi-pencil"></i> تعديل
-                                </a>
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <a asp-action="Details" asp-route-id="@p.Id"
+                                       class="btn btn-sm btn-outline-secondary py-1 px-2">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@p.Id"
+                                       class="btn btn-sm btn-outline-primary py-1 px-2">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -162,7 +171,7 @@ else
             </table>
         </div>
         <div class="card-footer bg-white border-top py-2 px-3 text-muted small d-flex justify-content-between align-items-center">
-            <span>إجمالي المعاملات المعروضة: <strong>@Model.Count</strong> معاملة</span>
+            <span>إجمالي المعاملات: <strong class="text-dark">@Model.Count</strong> معاملة</span>
         </div>
     </div>
 }

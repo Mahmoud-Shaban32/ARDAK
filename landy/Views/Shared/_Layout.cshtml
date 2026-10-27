@@ -4,59 +4,67 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - نظام أرضك العقاري</title>
+    <title>@ViewData["Title"] - أرضك | ARDAK Real Estate</title>
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Cinzel:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
     <!-- Stylesheets -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/landy.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <!-- ══ ELITE LUXURY NAVBAR ════════════════════════════════════ -->
     <header class="sticky-top">
         <nav class="navbar navbar-expand-lg navbar-dark ardak-navbar">
             <div class="container-fluid px-lg-4 px-3">
+                <!-- Brand Crest -->
                 <a class="ardak-brand" asp-controller="Home" asp-action="Index">
-                    <div class="ardak-logo-icon">
+                    <div class="ardak-brand-emblem">
                         <i class="bi bi-buildings"></i>
                     </div>
                     <div>
-                        <span class="ardak-brand-title">أرضك <span class="text-primary fw-light">|</span> Ardak</span>
-                        <span class="ardak-brand-subtitle">نظام إدارة العقارات المتطور</span>
+                        <div class="d-flex align-items-baseline">
+                            <span class="ardak-brand-title">أرضك</span>
+                            <span class="ardak-brand-sep">/</span>
+                            <span class="ardak-brand-en">ARDAK</span>
+                        </div>
+                        <span class="ardak-brand-sub">إدارة العقارات والاستثمار الفاخر</span>
                     </div>
                 </a>
-                
-                <button class="navbar-toggler border-0 shadow-none text-white p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="bi bi-list fs-3"></i>
+
+                <!-- Mobile Toggler -->
+                <button class="navbar-toggler border-0 shadow-none p-2" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2 text-white"></i>
                 </button>
-                
+
+                <!-- Navigation Destinations -->
                 <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1 px-lg-3">
                         @if (CurrentUser.IsAuthenticated)
                         {
                             @if (CurrentUser.IsSuperAdmin || CurrentUser.IsAdmin)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link ardak-nav-item" asp-controller="InternalDashboard" asp-action="Index">
-                                        <i class="bi bi-grid-1x2"></i>
+                                        <i class="bi bi-speedometer2"></i>
                                         <span>لوحة التحكم</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link ardak-nav-item" asp-controller="Customers" asp-action="Index">
-                                        <i class="bi bi-people"></i>
-                                        <span>العملاء</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link ardak-nav-item" asp-controller="Properties" asp-action="Index">
                                         <i class="bi bi-houses"></i>
                                         <span>العقارات</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link ardak-nav-item" asp-controller="Customers" asp-action="Index">
+                                        <i class="bi bi-people"></i>
+                                        <span>العملاء</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -75,9 +83,9 @@
                             @if (CurrentUser.IsSuperAdmin)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link ardak-nav-item text-danger-emphasis" asp-controller="AdminManagement" asp-action="Index">
-                                        <i class="bi bi-shield-lock"></i>
-                                        <span>لوحة المشرفين</span>
+                                    <a class="nav-link ardak-nav-item" style="color: #fca5a5 !important;" asp-controller="AdminManagement" asp-action="Index">
+                                        <i class="bi bi-shield-lock" style="color: #fca5a5 !important;"></i>
+                                        <span>المشرفين</span>
                                     </a>
                                 </li>
                             }
@@ -89,30 +97,39 @@
                                         <span>بوابة العميل</span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link ardak-nav-item" asp-controller="CustomerPortal" asp-action="Properties">
+                                        <i class="bi bi-buildings"></i>
+                                        <span>عقاراتي</span>
+                                    </a>
+                                </li>
                             }
                         }
                     </ul>
-                    
+
+                    <!-- User Account / Logout Actions -->
                     <ul class="navbar-nav align-items-lg-center gap-2">
                         @if (CurrentUser.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <div class="user-status-pill">
-                                    <i class="bi bi-person-circle fs-5 text-primary"></i>
-                                    <div class="d-flex flex-column text-end">
-                                        <span class="small fw-bold">@CurrentUser.Email</span>
-                                        <div class="mt-n1">
+                                    <div class="user-avatar-initials">
+                                        @(CurrentUser.IsSuperAdmin ? "SA" : (CurrentUser.IsAdmin ? "AD" : "CU"))
+                                    </div>
+                                    <div class="d-flex flex-column text-end" style="line-height: 1.2;">
+                                        <span class="small fw-bold text-white font-monospace">@CurrentUser.Email</span>
+                                        <div class="mt-1">
                                             @if (CurrentUser.IsSuperAdmin)
                                             {
-                                                <span class="badge bg-danger text-white py-0 px-2" style="font-size: 0.68rem;">مشرف عام</span>
+                                                <span class="badge py-0 px-2" style="background: rgba(192, 43, 45, 0.3); color: #fca5a5; font-size: 0.68rem; border: 1px solid rgba(252, 165, 165, 0.3);">مشرف عام</span>
                                             }
                                             else if (CurrentUser.IsAdmin)
                                             {
-                                                <span class="badge bg-primary text-white py-0 px-2" style="font-size: 0.68rem;">مشرف</span>
+                                                <span class="badge py-0 px-2" style="background: rgba(16, 147, 115, 0.3); color: #6ee7b7; font-size: 0.68rem; border: 1px solid rgba(110, 231, 183, 0.3);">مشرف</span>
                                             }
                                             else if (CurrentUser.IsCustomer)
                                             {
-                                                <span class="badge bg-success text-white py-0 px-2" style="font-size: 0.68rem;">عميل</span>
+                                                <span class="badge py-0 px-2" style="background: rgba(18, 125, 168, 0.3); color: #7dd3fc; font-size: 0.68rem; border: 1px solid rgba(125, 211, 252, 0.3);">عميل موثق</span>
                                             }
                                         </div>
                                     </div>
@@ -121,7 +138,7 @@
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+                                    <button type="submit" class="btn btn-outline-light btn-sm px-3 rounded-pill" title="تسجيل الخروج">
                                         <i class="bi bi-box-arrow-right"></i>
                                         <span>خروج</span>
                                     </button>
@@ -131,7 +148,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-primary px-4 rounded-pill shadow-sm" asp-controller="Account" asp-action="Login">
+                                <a class="btn btn-sm btn-success rounded-pill px-4 shadow-sm" asp-controller="Account" asp-action="Login">
                                     <i class="bi bi-box-arrow-in-left"></i>
                                     <span>تسجيل الدخول</span>
                                 </a>
@@ -143,27 +160,31 @@
         </nav>
     </header>
 
+    <!-- ══ MAIN VIEW CANVAS ═════════════════════════════════════ -->
     <div class="container-fluid px-lg-4 px-3 py-4">
         <main role="main">
             @RenderBody()
         </main>
     </div>
 
+    <!-- ══ REFINED FOOTER ═══════════════════════════════════════ -->
     <footer class="ardak-footer mt-auto">
-        <div class="container-fluid px-lg-4 px-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="container-fluid px-lg-4 px-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-primary px-2">أرضك</span>
-                <span>&copy; @DateTime.UtcNow.Year - نظام أرضك المتكامل لإدارة العقارات والمعاملات</span>
+                <div class="ardak-brand-emblem" style="width: 28px; height: 28px; font-size: 0.85rem; border-radius: 6px;">
+                    <i class="bi bi-buildings"></i>
+                </div>
+                <span>&copy; @DateTime.UtcNow.Year &mdash; منصة أرضك | نظام إدارة واستثمار العقارات والمعاملات الرسمية</span>
             </div>
-            <div class="d-flex gap-3 small text-muted">
-                <span><i class="bi bi-shield-check text-success me-1"></i>نظام آمن ومشفّر</span>
+            <div class="d-flex align-items-center gap-3 small" style="color: rgba(255, 255, 255, 0.45);">
+                <span><i class="bi bi-shield-lock-fill text-success me-1"></i>نظام إلكتروني مشفّر 256-bit</span>
                 <span>&bull;</span>
                 <span>المملكة العربية السعودية</span>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

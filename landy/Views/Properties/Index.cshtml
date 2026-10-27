@@ -1,233 +1,271 @@
 @model IReadOnlyList<PropertySummaryDto>
 @using Ardak.Model.Enums
 @{
-    ViewData["Title"] = "إدارة سجلات العقارات";
+    ViewData["Title"] = "سجل الأصول العقارية";
     var filter = ViewBag.Filter as PropertySearchFilterDto ?? new PropertySearchFilterDto();
     var customerList = ViewBag.Customers as SelectList;
+    bool hasActiveFilter = !string.IsNullOrEmpty(filter.ReferenceNumber)
+                        || !string.IsNullOrEmpty(filter.Location)
+                        || filter.Type.HasValue
+                        || filter.Status.HasValue
+                        || filter.CustomerId.HasValue;
 }
 
-<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3">
+<!-- ══ PAGE HEADER ════════════════════════════════════════════ -->
+<div class="page-header-box d-flex justify-content-between align-items-center flex-wrap gap-3 fade-in">
     <div>
-        <h2 class="h3 fw-bold mb-1">
-            <i class="bi bi-houses text-success me-2"></i>سجل العقارات والأراضي
-        </h2>
-        <p class="text-muted mb-0 small">المخزون العقاري الداخلي &bull; ملفات الأراضي والفلل الموثّقة</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h2 class="h3 fw-800 mb-0">
+                <i class="bi bi-houses text-primary me-2"></i>سجل الأصول العقارية والأراضي
+            </h2>
+            <span class="badge badge-subtle-success">محفظة الأصول</span>
+        </div>
+        <p class="text-muted mb-0 small">المخزون العقاري الداخلي &bull; ملفات الأراضي والفلل الموثّقة وصكوك الملكية</p>
     </div>
-    <a asp-action="Create" class="btn btn-success rounded-pill shadow-sm">
-        <i class="bi bi-building-add me-1"></i>
+    <a asp-action="Create" class="btn btn-success rounded-pill shadow-sm px-4">
+        <i class="bi bi-building-add fs-6"></i>
         <span>تسجيل عقار جديد</span>
     </a>
 </div>
 
+<!-- Alerts -->
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill fs-5"></i>
         <div>@TempData["SuccessMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
-
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
         <div>@TempData["ErrorMessage"]</div>
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<!-- عناصر التحكم في البحث والتصفية -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-3">
-        <form asp-action="Index" method="get" class="row g-2 align-items-center">
-            <div class="col-md-3">
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
-                        <i class="bi bi-hash text-muted"></i>
-                    </span>
-                    <input type="text" name="ReferenceNumber" class="form-control border-start-0" placeholder="رقم المرجع (مثال: PRP-001)" value="@filter.ReferenceNumber" />
-                </div>
+<!-- ══ FILTER BAR ════════════════════════════════════════════ -->
+<div class="filter-bar mb-4">
+    <form asp-action="Index" method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small">رقم المرجع الداخلي</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-hash text-muted"></i></span>
+                <input type="text" name="ReferenceNumber" class="form-control font-monospace"
+                       placeholder="مثال: PRP-001" value="@filter.ReferenceNumber" />
             </div>
-            <div class="col-md-3">
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
-                        <i class="bi bi-geo-alt text-muted"></i>
-                    </span>
-                    <input type="text" name="Location" class="form-control border-start-0" placeholder="الموقع (المدينة، الحي)" value="@filter.Location" />
-                </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small">الموقع الجغرافي</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt text-muted"></i></span>
+                <input type="text" name="Location" class="form-control"
+                       placeholder="المدينة أو الحي..." value="@filter.Location" />
             </div>
-            <div class="col-md-2">
-                <select name="Type" class="form-select">
-                    <option value="">جميع الأنواع</option>
-                    @foreach (var val in Enum.GetValues<PropertyType>())
-                    {
-                        if (filter.Type == val)
-                        {
-                            <option value="@val" selected>@(val == PropertyType.Land ? "أرض" : "فيلا")</option>
-                        }
-                        else
-                        {
-                            <option value="@val">@(val == PropertyType.Land ? "أرض" : "فيلا")</option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="Status" class="form-select">
-                    <option value="">جميع الحالات</option>
-                    @foreach (var val in Enum.GetValues<PropertyStatus>())
-                    {
-                        if (filter.Status == val)
-                        {
-                            <option value="@val" selected>
-                                @switch (val)
-                                {
-                                    case PropertyStatus.Active: <span>نشط</span>; break;
-                                    case PropertyStatus.UnderReview: <span>قيد المراجعة</span>; break;
-                                    case PropertyStatus.Reserved: <span>محجوز</span>; break;
-                                    case PropertyStatus.Sold: <span>مباع</span>; break;
-                                    case PropertyStatus.Archived: <span>مؤرشف</span>; break;
-                                }
-                            </option>
-                        }
-                        else
-                        {
-                            <option value="@val">
-                                @switch (val)
-                                {
-                                    case PropertyStatus.Active: <span>نشط</span>; break;
-                                    case PropertyStatus.UnderReview: <span>قيد المراجعة</span>; break;
-                                    case PropertyStatus.Reserved: <span>محجوز</span>; break;
-                                    case PropertyStatus.Sold: <span>مباع</span>; break;
-                                    case PropertyStatus.Archived: <span>مؤرشف</span>; break;
-                                }
-                            </option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-outline-primary flex-grow-1">
-                    <i class="bi bi-funnel"></i> تصفية
-                </button>
-                @if (!string.IsNullOrEmpty(filter.ReferenceNumber) || !string.IsNullOrEmpty(filter.Location) || filter.Type.HasValue || filter.Status.HasValue || filter.CustomerId.HasValue)
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">نوع الأصل</label>
+            <select name="Type" class="form-select">
+                <option value="">جميع الأنواع</option>
+                @foreach (var val in Enum.GetValues<PropertyType>())
                 {
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                    </a>
+                    if (filter.Type == val)
+                    {
+                        <option value="@val" selected>@(val == PropertyType.Land ? "أرض" : "فيلا")</option>
+                    }
+                    else
+                    {
+                        <option value="@val">@(val == PropertyType.Land ? "أرض" : "فيلا")</option>
+                    }
                 }
-            </div>
-        </form>
-    </div>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">الحالة التشغيلية</label>
+            <select name="Status" class="form-select">
+                <option value="">جميع الحالات</option>
+                @foreach (var val in Enum.GetValues<PropertyStatus>())
+                {
+                    var label = val switch {
+                        PropertyStatus.Active => "نشط",
+                        PropertyStatus.UnderReview => "قيد المراجعة",
+                        PropertyStatus.Reserved => "محجوز",
+                        PropertyStatus.Sold => "مباع",
+                        PropertyStatus.Archived => "مؤرشف",
+                        _ => val.ToString()
+                    };
+                    if (filter.Status == val)
+                    {
+                        <option value="@val" selected>@label</option>
+                    }
+                    else
+                    {
+                        <option value="@val">@label</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+                <i class="bi bi-funnel"></i>
+                <span>تصفية</span>
+            </button>
+            @if (hasActiveFilter)
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary" title="مسح الفلاتر">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            }
+        </div>
+    </form>
+    @if (hasActiveFilter)
+    {
+        <div class="mt-2 small text-muted border-top pt-2">
+            <i class="bi bi-funnel-fill text-primary me-1"></i>
+            عرض <strong class="text-dark">@Model.Count</strong> نتيجة مطابقة
+        </div>
+    }
 </div>
 
-<!-- جدول سجلات العقارات -->
-<div class="card shadow-sm border-0">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>رقم المرجع</th>
-                    <th>النوع</th>
-                    <th>العنوان / الاسم</th>
-                    <th>الموقع</th>
-                    <th>المساحة</th>
-                    <th>المالك الأساسي</th>
-                    <th>الحالة</th>
-                    <th>تاريخ الإضافة</th>
-                    <th class="text-end">الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Any())
+<!-- ══ TABLE / EMPTY ONBOARDING ═══════════════════════════════ -->
+<div class="card border-0">
+    @if (!Model.Any())
+    {
+        <div class="luxury-empty-state py-5">
+            <div class="luxury-empty-icon">
+                <i class="bi bi-buildings"></i>
+            </div>
+            <h5>لا توجد عقارات مسجلة في المحفظة حالياً</h5>
+            <p>
+                @if (hasActiveFilter)
                 {
-                    <tr>
-                        <td colspan="9" class="text-center py-5 text-muted">
-                            <i class="bi bi-building-slash fs-1 d-block mb-2 text-secondary"></i>
-                            <p class="mb-1">لا توجد سجلات عقارات تطابق معايير البحث.</p>
-                            @if (!string.IsNullOrEmpty(filter.ReferenceNumber) || !string.IsNullOrEmpty(filter.Location) || filter.Type.HasValue || filter.Status.HasValue)
-                            {
-                                <a asp-action="Index" class="btn btn-sm btn-link">مسح فلاتر البحث</a>
-                            }
-                        </td>
-                    </tr>
+                    <span>لم يتم العثور على أي نتائج تطابق معايير التصفية المحددة.</span>
                 }
-                @foreach (var prop in Model)
+                else
                 {
-                    <tr>
-                        <td class="fw-bold">
-                            <a asp-action="Details" asp-route-id="@prop.Id" class="text-decoration-none text-primary font-monospace">
-                                @prop.ReferenceNumber
-                            </a>
-                        </td>
-                        <td>
-                            @if (prop.Type == PropertyType.Land)
-                            {
-                                <span class="badge badge-subtle-secondary">
-                                    <i class="bi bi-geo me-1"></i>أرض
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-subtle-primary">
-                                    <i class="bi bi-house-door me-1"></i>فيلا
-                                </span>
-                            }
-                        </td>
-                        <td class="fw-bold">@prop.Title</td>
-                        <td>@prop.City، @prop.DistrictOrArea</td>
-                        <td class="font-monospace">@prop.AreaMeasurement.ToString("N2") @prop.AreaUnit</td>
-                        <td>
-                            <a asp-controller="Customers" asp-action="Details" asp-route-id="@prop.PrimaryCustomerId" class="text-decoration-none text-dark fw-semibold">
-                                <i class="bi bi-person me-1 text-muted"></i>@prop.PrimaryCustomerName
-                            </a>
-                            @if (prop.CoOwnersCount > 0)
-                            {
-                                <span class="badge bg-light text-dark border ms-1">+@prop.CoOwnersCount مالك</span>
-                            }
-                        </td>
-                        <td>
-                            @switch (prop.Status)
-                            {
-                                case PropertyStatus.Active:
-                                    <span class="badge badge-subtle-success">نشط</span>
-                                    break;
-                                case PropertyStatus.UnderReview:
-                                    <span class="badge badge-subtle-warning">قيد المراجعة</span>
-                                    break;
-                                case PropertyStatus.Reserved:
-                                    <span class="badge badge-subtle-info">محجوز</span>
-                                    break;
-                                case PropertyStatus.Sold:
-                                    <span class="badge badge-subtle-secondary">مباع</span>
-                                    break;
-                                case PropertyStatus.Archived:
-                                    <span class="badge bg-secondary">مؤرشف</span>
-                                    break;
-                            }
-                        </td>
-                        <td class="small text-muted">@prop.CreatedAtUtc.ToString("yyyy-MM-dd")</td>
-                        <td class="text-end">
-                            <a asp-action="Details" asp-route-id="@prop.Id" class="btn btn-sm btn-outline-primary py-1 px-2 me-1">
-                                <i class="bi bi-eye"></i> ملف
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@prop.Id" class="btn btn-sm btn-outline-secondary py-1 px-2 me-1">
-                                <i class="bi bi-pencil"></i> تعديل
-                            </a>
-                            @if (prop.Status != PropertyStatus.Archived)
-                            {
-                                <form asp-action="Archive" asp-route-id="@prop.Id" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" onclick="return confirm('أرشفة سجل @prop.ReferenceNumber؟');">
-                                        <i class="bi bi-archive"></i>
-                                    </button>
-                                </form>
-                            }
-                        </td>
-                    </tr>
+                    <span>ابدأ بإدراج الأراضي والفلل وتوثيق صكوك الملكية الإلكترونية وإحداثيات الموقع والملاك.</span>
                 }
-            </tbody>
-        </table>
-    </div>
+            </p>
+            @if (hasActiveFilter)
+            {
+                <a asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                    <span>مسح فلاتر البحث</span>
+                </a>
+            }
+            else
+            {
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    <span>تسجيل أول عقار الآن</span>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>رقم المرجع</th>
+                        <th>النوع</th>
+                        <th>العنوان / الاسم</th>
+                        <th>الموقع</th>
+                        <th>المساحة</th>
+                        <th>المالك الأساسي</th>
+                        <th>الحالة</th>
+                        <th>تاريخ الإضافة</th>
+                        <th class="text-end">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prop in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@prop.Id" class="text-decoration-none text-primary fw-800 font-monospace small">
+                                    @prop.ReferenceNumber
+                                </a>
+                            </td>
+                            <td>
+                                @if (prop.Type == PropertyType.Land)
+                                {
+                                    <span class="badge badge-subtle-gold">
+                                        <i class="bi bi-geo me-1"></i>أرض
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-subtle-primary">
+                                        <i class="bi bi-house-door me-1"></i>فيلا
+                                    </span>
+                                }
+                            </td>
+                            <td class="fw-700 text-dark">@prop.Title</td>
+                            <td class="small text-muted">@prop.City، @prop.DistrictOrArea</td>
+                            <td class="font-monospace fw-bold small">@prop.AreaMeasurement.ToString("N2") @prop.AreaUnit</td>
+                            <td>
+                                <a asp-controller="Customers" asp-action="Details" asp-route-id="@prop.PrimaryCustomerId"
+                                   class="text-decoration-none text-dark fw-700 small">
+                                    <i class="bi bi-person me-1 text-muted"></i>@prop.PrimaryCustomerName
+                                </a>
+                                @if (prop.CoOwnersCount > 0)
+                                {
+                                    <span class="badge bg-light text-dark border ms-1 small">+@prop.CoOwnersCount شركاء</span>
+                                }
+                            </td>
+                            <td>
+                                @switch (prop.Status)
+                                {
+                                    case PropertyStatus.Active:
+                                        <span class="badge badge-subtle-success">نشط</span>
+                                        break;
+                                    case PropertyStatus.UnderReview:
+                                        <span class="badge badge-subtle-warning">قيد المراجعة</span>
+                                        break;
+                                    case PropertyStatus.Reserved:
+                                        <span class="badge badge-subtle-info">محجوز</span>
+                                        break;
+                                    case PropertyStatus.Sold:
+                                        <span class="badge badge-subtle-secondary">مباع</span>
+                                        break;
+                                    case PropertyStatus.Archived:
+                                        <span class="badge bg-secondary">مؤرشف</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="small text-muted">@prop.CreatedAtUtc.ToString("yyyy-MM-dd")</td>
+                            <td class="text-end">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <a asp-action="Details" asp-route-id="@prop.Id"
+                                       class="btn btn-sm btn-outline-primary py-1 px-2" title="عرض ملف العقار">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@prop.Id"
+                                       class="btn btn-sm btn-outline-secondary py-1 px-2" title="تعديل">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (prop.Status != PropertyStatus.Archived)
+                                    {
+                                        <form asp-action="Archive" asp-route-id="@prop.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger py-1 px-2"
+                                                    title="أرشفة"
+                                                    onclick="return confirm('أرشفة سجل @prop.ReferenceNumber؟');">
+                                                <i class="bi bi-archive"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>

@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="H:/landy/landy/applayer/applayer.csproj" />
-  <Project Path="H:/landy/landy/infra/infra.csproj" />
-  <Project Path="H:/landy/landy/landy/landy.csproj" />
-  <Project Path="H:/landy/landy/model/model.csproj" />
+  <Project Path="applayer/applayer.csproj" />
+  <Project Path="infra/infra.csproj" />
+  <Project Path="landy/landy.csproj" />
+  <Project Path="model/model.csproj" />
+  <Project Path="tests/Ardak.Tests/Ardak.Tests.csproj" />
 </Solution>
